@@ -1,0 +1,66 @@
+.chatBox {
+    width: 80%;
+    height: 100%;
+    float: left;
+    position: relative;
+}
+
+.messageContainer {
+    background: url('background.jpg') no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 90%;
+    overflow-y: scroll;
+}
+
+.inputBox {
+    width: 100%;
+    height: 5%;
+}
+
+.txtInput {
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.chatMessage {
+    position: relative;
+	width: auto;
+	min-width: 100px;
+	max-width: 45%;
+	height: auto;
+	padding: 25px;
+	padding-bottom: 35px;
+	margin: 20px 15px;
+	background: #FFF;
+	border-radius: 7px;
+    clear: both;
+    font-size: 20px;
+}
+
+.chatMessage.received {
+    float: left;
+}
+
+.chatMessage.sent {
+    float: right;
+    background: #effdde;
+}
+
+.chatInfoHeader {
+	position: relative;
+	width: 100%;
+	height: 5%;
+    padding-left: 10px;
+	background: #FFF;
+}
+
+div .chatInfoHeader {
+    font-weight: bold;
+	color: #444;
+    cursor: default;
+    font-size: 25px;
+    border-left: 2px solid rgb(180, 180, 180);
+}

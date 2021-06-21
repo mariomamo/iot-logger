@@ -1,0 +1,12 @@
+iot-front-end/node_modules
+scripts/flow/*/.flowconfig
+.flowconfig
+*~
+*.pyc
+.grunt
+iot-front-end/build/
+iot-logger/.idea/
+iot-logger/Scripts
+iot-logger/Lib
+iot-logger/res
+iot-logger/include
