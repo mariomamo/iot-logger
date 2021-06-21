@@ -6,7 +6,7 @@ import ReplayBar from './replayBar/replaybar';
 
 const { Search } = Input;
 
-const ChatBox = ({name, messages})=> {
+const ChatBox = ({chatId, name, messages, onSend})=> {
 
     const renderMessage = (message, indice)=> {
         if (message !== undefined) {
@@ -51,7 +51,7 @@ const ChatBox = ({name, messages})=> {
             {messages !== undefined && messages.map((message, indice) => renderMessage(message, indice))}
             </div>
             <div className='inputBox'>
-                <ReplayBar />
+                <ReplayBar chatId={chatId} onSend={onSend} />
             </div>
         </div>
     )

@@ -41,8 +41,7 @@ const Sidebar = ({onClick, chatsList})=> {
     return (
         <div className='sidebar'>
             <SearchBar />
-            {/* {chatsList !== undefined && chatsList.map((message, index) => <MessageChatBox onClick={changeClick} key={index} id={message.chatId} messages={message.messages} name={message.name} lastMessage={message.lastMessage} ora={message.ora} selected={message.selected}/>)} */}
-            {chatsList !== undefined && chatsList.map((message, index) => <MessageChatBox onClick={changeClick} key={index} id={message.chatId} messages={message.messages} name={message.name} lastMessage={message.lastMessage} ora={message.ora} selected={message.selected}/>)}
+            {chatsList !== undefined && chatsList.map((message, index) => <MessageChatBox onClick={changeClick} key={index} id={message.chatId} messages={message.messages} name={message.name} lastMessage={message.lastMessage} ora={message.ora} img={message.img} selected={message.selected}/>)}
         </div>
     )
 }
