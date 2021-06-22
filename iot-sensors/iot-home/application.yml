@@ -1,0 +1,6 @@
+id: "3"
+name: 'Home'
+image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Home-icon.svg/2048px-Home-icon.svg.png'
+receive_topic_name: 'iot/sensors'
+send_topic_name: 'iot/web/sensors'
+topic_url: 'localhost'

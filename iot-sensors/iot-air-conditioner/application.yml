@@ -1,0 +1,6 @@
+id: "2"
+name: 'Air conditioner'
+image: 'https://previews.123rf.com/images/artdigvision/artdigvision1712/artdigvision171200140/91350175-air-conditioner-icon-flat-design.jpg'
+receive_topic_name: 'iot/sensors'
+send_topic_name: 'iot/web/sensors'
+topic_url: 'localhost'

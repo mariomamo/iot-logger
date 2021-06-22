@@ -22,8 +22,9 @@ const Chat = ()=> {
             });
 
             client.on("message", (message)=> {
-                message = JSON.parse(message);
-                console.log(chatsList, "-", message.data.chatId);
+                console.log("MESSAGGIONE: ", message);
+                // message = JSON.parse(message);
+                console.log(chatsList, "-", message);
                 if (contains(chatsList, message.data.chatId)) {
                     let newMessage = getChatFromList(chatsList, message.data.chatId);
                     newMessage.messages.push(message.data.payload)

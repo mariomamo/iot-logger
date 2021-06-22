@@ -1,21 +1,26 @@
 import socket
 from threading import Thread
+
+import werkzeug
 import yaml
 from flask import Flask
-import werkzeug
 from werkzeug.utils import cached_property
+
 werkzeug.cached_property = werkzeug.utils.cached_property
+from service.RabbitMQConnector import RabbitMQConnector
 from flask import Blueprint
 from flask_restplus import Api
 from rest.Loggercontroller import api as loggerapi
 from service.SocketIOServer import SocketIOServer
 
-yaml_config_path = "application.yml"
-print(f"path {yaml_config_path}")
-config_file_yml = open(yaml_config_path)
-config_dict = yaml.load(config_file_yml, Loader=yaml.FullLoader)
 
-socketIOServer = SocketIOServer(config_dict['name'])
+def getConfigDict():
+    yaml_config_path = "application.yml"
+    config_file_yml = open(yaml_config_path)
+    return yaml.load(config_file_yml, Loader=yaml.FullLoader)
+
+
+config_dict = getConfigDict()
 
 
 def runApiServer():
@@ -39,7 +44,7 @@ def runApiServer():
     app.register_blueprint(blueprint)
     app.app_context().push()
     # DEV
-    app.run(host=host_ip, port=config_dict['port'])
+    app.run(host=host_ip, port=config_dict['rest_port'])
     # PRODUCTION
     # waitress.serve(app, listen=f'{host_ip}:{config_dict["port"]}')
 
@@ -48,6 +53,18 @@ def runSocketIOServer():
     socketIOServer.start()
 
 
+def runMQTTClient():
+    rabbitMQConnector.start()
+
+
 if __name__ == '__main__':
+    socketIOServer = SocketIOServer(config_dict['name'])
+    rabbitMQConnector = RabbitMQConnector(config_dict['receive_topic_name'], config_dict['send_topic_name'],
+                                          config_dict['topic_url'])
+
+    socketIOServer.subscribe(rabbitMQConnector)
+    rabbitMQConnector.subscribe(socketIOServer)
+
     Thread(target=runApiServer).start()
     Thread(target=runSocketIOServer).start()
+    Thread(target=runMQTTClient).start()

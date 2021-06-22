@@ -1,2 +1,5 @@
 name: 'IoT-Logger'
-port: 4444
+receive_topic_name: 'sensors/logs'
+send_topic_name: 'iot/sensors'
+topic_url: 'localhost'
+rest_port: 4444

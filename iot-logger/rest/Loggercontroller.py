@@ -1,3 +1,4 @@
+import ast
 import json
 
 from flask import request
@@ -18,5 +19,6 @@ class Message(Resource):
         ris = RisultatoDTO()
         ris.setSuccess(200)
         ris.setData(payload)
-        socketIOServer.send("message", ris.toJSON())
+        print(payload)
+        socketIOServer.send("message", ast.literal_eval(ris.__str__()))
         return ris
