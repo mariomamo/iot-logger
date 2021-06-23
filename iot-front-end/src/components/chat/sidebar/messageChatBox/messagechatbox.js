@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './messagechatbox.css';
 
-const MessageChatBox = ({id, name, lastMessage, ora, img, selected, onClick})=> {
+const MessageChatBox = ({id, name, lastMessage, img, selected, onClick})=> {
     const [chatboxClassName, setChatboxClassName] = useState("message");
     const [chatboxInfo, setChatboxInfo] = useState("messageinfo");
     const [oraStyle, setOraStyle] = useState("ora");
@@ -36,11 +36,11 @@ const MessageChatBox = ({id, name, lastMessage, ora, img, selected, onClick})=> 
                     {name}
                 </div>
                 <div className='messagepreview'>
-                    {lastMessage}
+                    {lastMessage.message}
                 </div>
             </div>
             <div className={oraStyle}>
-                {ora}
+                {lastMessage.hour}
             </div>
         </div>
     )

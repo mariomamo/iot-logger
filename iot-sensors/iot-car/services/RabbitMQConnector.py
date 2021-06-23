@@ -4,7 +4,6 @@ import logging
 import pika
 import requests
 
-from dto.RisultatoDTO import RisultatoDTO
 from interfaces.Observable import Observable
 from interfaces.Observator import Observator
 
@@ -25,13 +24,18 @@ class RabbitMQConnector(Observable, Observator):
         self.__receive_channel = self.__getReceiveChannel(receive_topic_name, connection)
         self.__send_channel = self.__get_send_channel(send_topic_name, connection)
         self.__observators = []
+        self.notifyConnectedStatus(send_topic_name, topic_id)
+        self.__headers = {'Content-Type': 'application/json'}
+
+    def notifyConnectedStatus(self, send_topic_name, topic_id):
+        message = self.__getResponseMEssage("text", "I'm connected!", asString=False)
+        logger.info(f'Sent on {send_topic_name} value {message}')
         self.__send_channel.basic_publish(exchange="", routing_key=send_topic_name,
-                                          body=self.__get_body_payload(topic_id))
-        self.__headers = {'Content-Type': "application/json", 'Accept': "application/json"}
-        requests.get("http://192.168.1.52:4444/iot/logger/sendlog", headers=self.__headers, json=self.__getResponseMEssage("text", "I'm connected!"))
+                                          body=message)
 
     def __callBack(self, channel, method, properties, body):
         body = ast.literal_eval(body.decode("UTF-8").__str__())
+        logger.info(f'Received from queue {body}')
         output = self.__getResponseMEssage("text", "Command not found")
 
         if body['payload']['message'].lower() == 'position':
@@ -45,19 +49,22 @@ class RabbitMQConnector(Observable, Observator):
 
         requests.get("http://192.168.1.52:4444/iot/logger/sendlog", headers=self.__headers, json=output.__str__())
 
-    def __getResponseMEssage(self, type, message):
-        output = {
+    def __getResponseMEssage(self, type, message, asString: bool=True):
+        payload = {
+            "sensorType": "car",
             "chatId": self.__topic_id,
             "name": self.__name,
-            "ora": "20:00",
             "img": self.__image,
             "payload": {
+                "hour": "20:00",
                 "type": type,
                 "message": message
             }
         }
 
-        return output
+        if not asString:
+            payload = bytes(payload.__str__(), encoding="UTF-8")
+        return payload
 
     def __getReceiveChannel(self, topic_name, connection):
         try:
@@ -90,23 +97,7 @@ class RabbitMQConnector(Observable, Observator):
     def subscribe(self, observator: Observator):
         self.__observators.append(observator)
 
-    def __get_body_payload(self, topic_id):
-        payload = {
-            "chatId": topic_id,
-            "name": "Phone",
-            "ora": "20:00",
-            "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Circle-icons-car.svg/1200px-Circle-icons-car.svg.png",
-            "payload": {
-                "type": "text",
-                "message": "My position is {position}"
-            }
-        }
-
-        return bytes(payload.__str__(), encoding="UTF-8")
-
     def on_notify(self, *args, **kwargs):
         logger.info(f'Ricevuto')
         # self.__send_channel.basic_publish(exchange='', routing_key=config_dict['topic_name'],
         #                                   body=bytes(payload.__str__(), encoding="UTF-8"))
-
-    pass

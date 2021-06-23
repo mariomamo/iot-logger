@@ -3,6 +3,7 @@ import ChatBox from './chatBox/chatbox';
 import Sidebar from './sidebar/sidebar';
 import socketio from "socket.io-client";
 import './chat.css';
+import SplashBox from './splashBox/splashbox';
 
 const Chat = ()=> {
     const [selectedChat, setSelectedChat] = useState({});
@@ -11,9 +12,9 @@ const Chat = ()=> {
     const [url] = useState("http://127.0.0.1");
     const [port] = useState(5000);
 
-    useEffect(() => {
-        console.log(chatsList);
-    }, [chatsList])
+    // useEffect(() => {
+    //     console.log(chatsList);
+    // }, [chatsList])
 
     useEffect(()=> {
         if (client !== null) {
@@ -22,14 +23,10 @@ const Chat = ()=> {
             });
 
             client.on("message", (message)=> {
-                console.log("MESSAGGIONE: ", message);
-                // message = JSON.parse(message);
-                console.log(chatsList, "-", message);
                 if (contains(chatsList, message.data.chatId)) {
-                    let newMessage = getChatFromList(chatsList, message.data.chatId);
-                    newMessage.messages.push(message.data.payload)
+                    updateExistingMessage(getChatFromList, chatsList, message);
                 } else {
-                    chatsList.push(getTNewChatTemplate(message.data, false));
+                    addNewMessage(message);
                 }
                 setChatsList([...chatsList]);
             });
@@ -39,95 +36,68 @@ const Chat = ()=> {
     useEffect(() => {
         setClient(socketio.connect(url + ":" + port));
 
-        // setChatsList([
-        //     {
-        //         chatId: "1",
-        //         name: "Mario Offertucci",
-        //         lastMessage: "Ciao, come va?",
-        //         ora: "20:00",
-        //         selected: false,
-        //         messages: [
-        //             {
-        //                 type: "text",
-        //                 isSended: true,
-        //                 message: "Turn on the lights",
-        //                 ora: "20:00"
-        //             },
-        //             {
-        //                 type: "text",
-        //                 isSended: false,
-        //                 message: "I turned on the lights",
-        //                 ora: "20:00"
-        //             }
-        //         ]
-        //     },
-        //     {
-        //         chatId: "2",
-        //         name: "Francesco Totti",
-        //         lastMessage: "Aridaje",
-        //         ora: "20:30",
-        //         selected: false,
-        //         messages: [
-        //             {
-        //                 type: "text",
-        //                 isSended: false,
-        //                 message: "My battery is low!",
-        //                 ora: "20:00"
-        //             },
-        //             {
-        //                 type: "text",
-        //                 isSended: true,
-        //                 message: "Shutdown",
-        //                 ora: "20:00"
-        //             }
-        //         ]
-        //     },
-        //     {
-        //         chatId: "3",
-        //         name: "Antonio Donnarumma",
-        //         lastMessage: "Non sono il portiere del Milan",
-        //         ora: "20:35",
-        //         selected: false,
-        //         messages: [
-        //             {
-        //                 type: "text",
-        //                 isSended: false,
-        //                 message: "Ma che vuoi",
-        //                 ora: "20:00"
-        //             }
-        //         ]
-        //     },
-        //     {
-        //         chatId: "4",
-        //         name: "Tizio strano",
-        //         lastMessage: "E da me che voi",
-        //         ora: "20:35",
-        //         selected: false
-        //     }
-        // ]);
+        setChatsList([
+            {
+                sensorType: "car",
+                chatId: "1",
+                name: "Mario Offertucci",
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Circle-icons-car.svg/1200px-Circle-icons-car.svg.png",
+                lastMessage: {
+                    hour: "20:00",
+                    type: "text",
+                    isSended: false,
+                    message: "I turned on the lights"
+                },
+                selected: false,
+                messages: [
+                    {
+                        hour: "20:00",
+                        type: "text",
+                        isSended: true,
+                        message: "Turn on the lights"
+                    },
+                    {
+                        hour: "20:00",
+                        type: "text",
+                        isSended: false,
+                        message: "I turned on the lights"
+                    }
+                ]
+            }
+        ]);
     }, []);
 
-    const getPayloadMessage = (type, isSended, message, ora) => {
+    const addNewMessage = (message)=> {
+        chatsList.push(getTNewChatTemplate(message.data, false));
+    }
+
+    const updateExistingMessage = (getChatFromList, chatsList, message) => {
+        let existingMessage = getChatFromList(chatsList, message.data.chatId);
+        message.data.payload.isSended = false;
+        existingMessage.lastMessage = message.data.payload;
+        existingMessage.messages.push(message.data.payload);
+    }
+
+    const getPayloadMessage = (type, isSended, message, hour) => {
         return {
+            hour: hour,
             type: type,
             isSended: isSended,
-            message: message,
-            ora: ora
+            message: message
         }
     }
 
     const getTNewChatTemplate = (message, isSended) => {
-        console.log("MSG: ", message);
-        let payload = getPayloadMessage(message.payload.type, isSended, message.payload.message, message.ora);
+        let payload = getPayloadMessage(message.payload.type, isSended, message.payload.message, message.payload.hour);
 
         return {
+            sensorType: message.sensorType,
             chatId: message.chatId.toString(),
             name: message.name,
-            ora: message.ora,
-            lastMessage: message.payload.message,
+            img: message.img,
+            lastMessage: payload,
             selected: false,
-            messages: [payload],
-            img: message.img
+            messages: [payload]
         }
     }
     
@@ -143,11 +113,11 @@ const Chat = ()=> {
         setSelectedChat(chat);
     }
 
-    const getMessageToSend = (chatId, msg, ora, type) => {
+    const getMessageToSend = (chatId, msg, hour, type) => {
         return {
             chatId: chatId,
-            ora: ora,
             payload: {
+                hour: hour,
                 type: type,
                 message: msg
             }
@@ -157,16 +127,15 @@ const Chat = ()=> {
     const onSend = (chatId, msg)=> {
         let currentChat = getChatFromList(chatsList, chatId);
         currentChat.messages.push(getPayloadMessage("text", true, msg, "00:59"));
-        console.log("LOG: ", currentChat);
         setChatsList([...chatsList]);
         client.emit('message', getMessageToSend(chatId, msg, "00:59", "text"));
     }
 
     const renderElement = ()=> {
         if (selectedChat !== undefined && selectedChat.selected) {
-            return <ChatBox onSend={onSend} chatId={selectedChat.chatId} name={selectedChat.name} messages={selectedChat.messages} />;
+            return <ChatBox sensorType={selectedChat.sensorType} onSend={onSend} chatId={selectedChat.chatId} name={selectedChat.name} messages={selectedChat.messages} />;
         } else {
-            return <ChatBox onSend={onSend} chatId={selectedChat.chatId} name="Select a chat for read and send messages" />;
+            return <SplashBox />
         }
     }
 

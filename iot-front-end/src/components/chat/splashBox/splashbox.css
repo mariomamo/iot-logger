@@ -1,0 +1,9 @@
+.splashBox {
+    width: 80%;
+    height: 100%;
+    float: left;
+    background-color: rgb(240, 240, 240);
+    background: url('background.jpg') no-repeat;
+    background-size: cover;
+    overflow-y: scroll;
+}

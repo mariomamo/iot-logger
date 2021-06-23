@@ -33,6 +33,7 @@ class RabbitMQConnector(Observable, Observator):
         ris = RisultatoDTO()
         ris.setSuccess(200)
         body = ast.literal_eval(body.decode("UTF-8").__str__())
+        logger.info(f'New message received from topic {self.__receive_topic_name} = {body}')
         ris.setData(body)
         self.__notify_all_listeners(channel, method, properties, ris)
 
@@ -76,6 +77,7 @@ class RabbitMQConnector(Observable, Observator):
 
     def on_notify(self, *args, **kwargs):
         body = args[0]
+        logger.info(f'Recevied {body}')
         chatId = body['chatId']
         send_topic_name = f'{self.__send_topic_name}/{chatId}'
         connection = pika.BlockingConnection(pika.ConnectionParameters(self.__topic_url))
@@ -89,7 +91,6 @@ class RabbitMQConnector(Observable, Observator):
 
         sendChannel.basic_publish(exchange="", routing_key=send_topic_name,
                                   body=self.__get_body_payload(body))
-        logger.info(f'Ricevuto')
 
     def __notify_all_listeners(self, *args, **kwargs):
         for observator in self.__observators:

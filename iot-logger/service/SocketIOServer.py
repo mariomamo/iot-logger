@@ -1,10 +1,9 @@
 import ast
-
-from dto.RisultatoDTO import RisultatoDTO
-from flask import Flask
 import logging
+
+from flask import Flask
 from flask_socketio import SocketIO
-import json
+
 from interfaces.Observable import Observable
 from interfaces.Observator import Observator
 
@@ -33,6 +32,7 @@ class SocketIOServer(Observable, Observator):
         print(f'Someone is connected - {data}')
 
     def __message_handler(self, data):
+        logger.info(f'Recevied {data}')
         self.__notify_all_listeners(data)
 
     def send(self, event: str, body):

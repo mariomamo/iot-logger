@@ -3,10 +3,11 @@ import { Input, message } from 'antd';
 import 'antd/dist/antd.css';
 import './chatbox.css';
 import ReplayBar from './replayBar/replaybar';
+import Message from './message/message';
 
 const { Search } = Input;
 
-const ChatBox = ({chatId, name, messages, onSend})=> {
+const ChatBox = ({sensorType, chatId, name, messages, onSend})=> {
 
     const renderMessage = (message, indice)=> {
         if (message !== undefined) {
@@ -25,19 +26,11 @@ const ChatBox = ({chatId, name, messages, onSend})=> {
     }
 
     const renderSendedTextMessage = (message, indice)=> {
-        return (
-            <div key={indice} className="chatMessage sent">
-                {message.message}
-            </div>
-        )
+        return <Message key={indice} message={message} isSended={true} />
     }
 
     const renderReceivedTextMessage = (message, indice)=> {
-        return (
-            <div key={indice} className="chatMessage received">
-                {message.message}
-            </div>
-        )
+        return <Message key={indice} message={message} isSended={false} />
     }
 
     return (
@@ -48,7 +41,7 @@ const ChatBox = ({chatId, name, messages, onSend})=> {
                 </div>
             </div>
             <div className='messageContainer'>
-            {messages !== undefined && messages.map((message, indice) => renderMessage(message, indice))}
+                {messages !== undefined && messages.map((message, indice) => renderMessage(message, indice))}
             </div>
             <div className='inputBox'>
                 <ReplayBar chatId={chatId} onSend={onSend} />
