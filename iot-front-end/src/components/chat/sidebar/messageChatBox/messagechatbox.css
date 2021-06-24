@@ -46,6 +46,11 @@
 }
 
 .messagepreview {
+    width: 300px;
+    white-space: nowrap;
+    height: 25px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin-top: 5px;
 }
 

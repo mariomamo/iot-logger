@@ -4,8 +4,10 @@
 	min-width: 100px;
 	max-width: 45%;
 	height: auto;
-	padding: 25px;
-	padding-bottom: 35px;
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 15px;
+	padding-bottom: 15px;
 	margin: 20px 15px;
 	background: #FFF;
 	border-radius: 7px;
@@ -15,4 +17,18 @@
 
 .chatMessage.received {
     float: left;
+}
+
+.hour-box {
+	float: right;
+	font-size: 14px;
+}
+
+.hour {
+	float: left;
+	padding-right: 5px;
+}
+
+.check {
+	float: left;
 }
