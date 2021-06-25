@@ -1,0 +1,33 @@
+.replyBar {
+	width: 100%;
+	height: 100%;
+	float: left;
+	background: #fff;
+}
+
+.textArea {
+	float: left;
+	resize: none;
+	border: solid 1px #BBB;
+	font-size: 20px;
+	width: 95%;
+	height: 100%;
+	outline: none;
+}
+
+.sendButton {
+	padding: 0;
+	margin: 0;
+	width: 5%;
+	height: 100%;
+	float: left;
+}
+
+.buttonsPanel {
+	height: 100%;
+	text-align: center;
+}
+
+.buttonsPanel button {
+	margin: 1%;
+}

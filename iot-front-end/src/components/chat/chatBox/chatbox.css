@@ -25,11 +25,6 @@
     transform: translateY(-50%);
 }
 
-.chatMessage.sent {
-    float: right;
-    background: #effdde;
-}
-
 .chatInfoHeader {
 	position: relative;
 	width: 100%;

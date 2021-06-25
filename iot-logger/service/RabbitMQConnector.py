@@ -1,4 +1,5 @@
 import ast
+import datetime
 import logging
 
 import pika
@@ -64,9 +65,10 @@ class RabbitMQConnector(Observable, Observator):
         self.__observators.append(observator)
 
     def __get_body_payload(self, body):
+        now = datetime.datetime.now()
         payload = {
             "chatId": body['chatId'],
-            "ora": "20:00",
+            "ora": f'{now.hour}:{now.minute}',
             "payload": {
                 "type": body['payload']['type'],
                 "message": body['payload']['message']

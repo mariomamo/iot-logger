@@ -32,3 +32,9 @@ iot-sensors/iot-home/Scripts
 iot-sensors/iot-home/res
 iot-sensors/iot-home/include
 iot-sensors/iot-home/pyvenv.cfg
+iot-sensors/nuclio-function/.idea/
+iot-sensors/nuclio-function/Lib
+iot-sensors/nuclio-function/Scripts
+iot-sensors/nuclio-function/res
+iot-sensors/nuclio-function/include
+iot-sensors/nuclio-function/pyvenv.cfg

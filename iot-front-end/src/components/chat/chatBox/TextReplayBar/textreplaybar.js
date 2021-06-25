@@ -1,9 +1,9 @@
-import React, { createRef, useEffect, useState } from 'react';
-import { Input, Button } from 'antd';
-import './replaybar.css';
+import React, { createRef } from 'react';
+import { Button } from 'antd';
+import './textreplaybar.css';
 import 'antd/dist/antd.css';
 
-const ReplayBar = ({chatId, onSend})=> {
+const TextReplayBar = ({chatId, onSend})=> {
     const message = createRef();
     
     const handleKeyPress = (e)=> {
@@ -25,4 +25,4 @@ const ReplayBar = ({chatId, onSend})=> {
     )
 }
 
-export default ReplayBar;
+export default TextReplayBar;

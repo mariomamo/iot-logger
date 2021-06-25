@@ -1,8 +1,8 @@
-import uuid
-from threading import Thread
-
 import werkzeug
 import yaml
+from sensors.AirConditionerSensor import AirConditionerSensor
+from sensors.CarSensor import CarSensor
+from sensors.HomeSensor import HomeSensor
 from werkzeug.utils import cached_property
 
 werkzeug.cached_property = werkzeug.utils.cached_property
@@ -15,35 +15,30 @@ def getConfigDict():
     return yaml.load(config_file_yml, Loader=yaml.FullLoader)
 
 
-#
-# connection = pika.BlockingConnection(pika.ConnectionParameters(host=config_dict['topic_url']))
-# sendChannel = connection.channel()
-# sendChannel.queue_declare(queue=config_dict['topic_name'])
-#
-# payload = {
-#     "chatId": receiving_topic_id,
-#     "name": "Phone",
-#     "ora": "20:00",
-#     "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Circle-icons-car.svg/1200px-Circle-icons-car.svg.png",
-#     "payload": {
-#         "type": "text",
-#         "message": "My position is {position}"
-#     }
-# }
-#
-# sendChannel.basic_publish(exchange='', routing_key=config_dict['topic_name'],
-#                           body=bytes(payload.__str__(), encoding="UTF-8"))
-# print(" [x] Sent 'Hello World!'")
-# connection.close()
+def startSensor(sensor_type, chat_id, sensor_name, sensor_image, send_topic_name, receive_topic_name, topic_url):
+    global config_dict
+    config_dict = getConfigDict()
+    rabbitMQConnector = RabbitMQConnector(sensor_name, sensor_image, receive_topic_name,
+                                          send_topic_name, chat_id,
+                                          topic_url)
 
+    if sensor_type == "car":
+        sensor = CarSensor(sensor_type, chat_id, sensor_name, sensor_image,
+                           send_topic_name)
+    elif sensor_type == "air-conditioner":
+        sensor = AirConditionerSensor(sensor_type, chat_id, sensor_name, sensor_image,
+                           send_topic_name)
+    elif sensor_type == "home":
+        sensor = HomeSensor(sensor_type, chat_id, sensor_name, sensor_image,
+                           send_topic_name)
 
-def runMQTTClient():
-    rabbitMQConnector.start()
+    sensor.subscribe(rabbitMQConnector)
+    rabbitMQConnector.subscribe(sensor)
 
 
 if __name__ == '__main__':
     config_dict = getConfigDict()
-    rabbitMQConnector = RabbitMQConnector(config_dict['name'], config_dict['image'], config_dict['receive_topic_name'],
-                                          config_dict['send_topic_name'], config_dict["id"],
-                                          config_dict['topic_url'])
-    Thread(target=runMQTTClient).start()
+    for sensor in config_dict['sensors']:
+        startSensor(sensor['sensor_type'], sensor['chat_id'], sensor['name'], sensor['image'],
+                    sensor['send_topic_name'], sensor['receive_topic_name'], sensor['topic_url'])
+

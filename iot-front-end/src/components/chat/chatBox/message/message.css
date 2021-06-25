@@ -15,8 +15,17 @@
     font-size: 20px;
 }
 
-.chatMessage.received {
-    float: left;
+.chatRow {
+	width: 100%;
+	display: flex;
+}
+
+.sentDiv {
+	justify-content: flex-end;
+}
+
+.sentDiv .chatMessage {
+    background: #effdde;
 }
 
 .hour-box {

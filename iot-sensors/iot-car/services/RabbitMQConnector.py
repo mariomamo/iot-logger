@@ -1,9 +1,11 @@
 import ast
+import datetime
 import logging
+from threading import Thread
 
 import pika
-import requests
-
+from dto.PayloadDTO import PayloadDTO
+from dto.ResponseMessageDTO import ResponseMessageDTO
 from interfaces.Observable import Observable
 from interfaces.Observator import Observator
 
@@ -14,57 +16,35 @@ logger.setLevel(logging.INFO)
 
 class RabbitMQConnector(Observable, Observator):
 
-    def __init__(self, name: str, image: str, topic_name: str, send_topic_name: str, topic_id: str, topic_url: str):
+    def __init__(self, name: str, image: str, receive_topic_name: str, send_topic_name: str, topic_id: str,
+                 topic_url: str):
         self.__topic_url = topic_url
         self.__name = name
         self.__image = image
         connection = pika.BlockingConnection(pika.ConnectionParameters(self.__topic_url))
-        receive_topic_name = f'{topic_name}/{topic_id}'
+        self.__receive_topic_name = f'{receive_topic_name}/{topic_id}'
+        print(self.__receive_topic_name)
         self.__topic_id = topic_id
-        self.__receive_channel = self.__getReceiveChannel(receive_topic_name, connection)
+        self.__send_topic_name = send_topic_name
         self.__send_channel = self.__get_send_channel(send_topic_name, connection)
+        self.__receive_channel = self.__getReceiveChannel(self.__receive_topic_name, connection)
         self.__observators = []
-        self.notifyConnectedStatus(send_topic_name, topic_id)
         self.__headers = {'Content-Type': 'application/json'}
+        self.__start_listening()
 
-    def notifyConnectedStatus(self, send_topic_name, topic_id):
-        message = self.__getResponseMEssage("text", "I'm connected!", asString=False)
-        logger.info(f'Sent on {send_topic_name} value {message}')
+    def notifyConnectedStatus(self, sensor_type, send_topic_name, topic_id, image, message):
+        now = datetime.datetime.now()
+        payload = PayloadDTO(f'{now.hour}:{now.minute}', "text", message)
+        responseMessageDTO = ResponseMessageDTO(sensor_type, topic_id, self.__name, image, payload)
+        print(responseMessageDTO)
+        logger.info(f'Sent on {send_topic_name} value {responseMessageDTO}')
         self.__send_channel.basic_publish(exchange="", routing_key=send_topic_name,
-                                          body=message)
+                                          body=bytes(responseMessageDTO.__str__(), encoding="UTF-8"))
 
     def __callBack(self, channel, method, properties, body):
         body = ast.literal_eval(body.decode("UTF-8").__str__())
-        logger.info(f'Received from queue {body}')
-        output = self.__getResponseMEssage("text", "Command not found")
-
-        if body['payload']['message'].lower() == 'position':
-            output = self.__getResponseMEssage("text", "This is my position {position}")
-        elif body['payload']['message'].lower() == 'turn off engine':
-            output = self.__getResponseMEssage("text", 'Engine turned off')
-        elif body['payload']['message'].lower() == 'turn on engine':
-            output = self.__getResponseMEssage("text", "Engine turned on")
-        elif body['payload']['message'].lower() == 'status':
-            output = self.__getResponseMEssage("text", "Fuel level is 57%")
-
-        requests.get("http://192.168.1.52:4444/iot/logger/sendlog", headers=self.__headers, json=output.__str__())
-
-    def __getResponseMEssage(self, type, message, asString: bool=True):
-        payload = {
-            "sensorType": "car",
-            "chatId": self.__topic_id,
-            "name": self.__name,
-            "img": self.__image,
-            "payload": {
-                "hour": "20:00",
-                "type": type,
-                "message": message
-            }
-        }
-
-        if not asString:
-            payload = bytes(payload.__str__(), encoding="UTF-8")
-        return payload
+        logger.info(f'New message received from topic {self.__receive_topic_name} = {body}')
+        self.__notify_all_listeners("message", channel, method, properties, body)
 
     def __getReceiveChannel(self, topic_name, connection):
         try:
@@ -83,21 +63,31 @@ class RabbitMQConnector(Observable, Observator):
         sendChannel.queue_declare(queue=send_topic_name)
         return sendChannel
 
-    def __notify_all_listeners(self, *args, **kwargs):
+    def __notify_all_listeners(self, message, *args, **kwargs):
+        logger.info(f'Notify all {self.__observators.__len__()} listeners')
         for observator in self.__observators:
-            logger.info(f'Mo notifico')
-            observator.on_notify(*args, **kwargs)
+            observator.on_notify(message, *args, **kwargs)
 
-    def start(self):
+    def __start_listening(self):
         if self.__receive_channel is not None:
-            self.__receive_channel.start_consuming()
+            Thread(target=lambda: self.__receive_channel.start_consuming()).start()
         else:
             logger.error(f'Broker is not connected!')
 
     def subscribe(self, observator: Observator):
         self.__observators.append(observator)
+        self.__notify_all_listeners("subscribed")
 
     def on_notify(self, *args, **kwargs):
-        logger.info(f'Ricevuto')
-        # self.__send_channel.basic_publish(exchange='', routing_key=config_dict['topic_name'],
-        #                                   body=bytes(payload.__str__(), encoding="UTF-8"))
+        message = args[0]
+        if message == "subscribed":
+            sensor_type = args[1]
+            topicName = args[2]
+            chatId = args[3]
+            image = args[4]
+            message = args[5]
+            self.notifyConnectedStatus(sensor_type, topicName, chatId, image, message)
+        elif message == "message":
+            logger.info(f'Ricevuto {args[1]}')
+            self.__send_channel.basic_publish(exchange="", routing_key=self.__send_topic_name,
+                                              body=args[1].__str__().encode())

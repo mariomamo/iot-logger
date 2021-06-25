@@ -1,30 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import MessageChatBox from './messageChatBox/messagechatbox';
-import SearchBar from './searchBar/searchbar';
+import React from 'react';
+import MessageChatBox from './MessageChatBox/messagechatbox';
+import SearchBar from './SearchBar/searchbar';
 import './sidebar.css';
 
 const Sidebar = ({onClick, chatsList})=> {
-    const [messagesMap, setMessagesMap] = useState();
-    
-    useEffect(() => {
-        // setChatsList(chatsList);
-        // JSON.stringify(Array.from(chatMap.entries()))
-        
-        // let iterator = chatMap.keys();
-        // let next;
-        // let tempList = [];
-
-        // console.log("M: ", chatMap);
-
-        // for (let i = 0; i < chatMap.size; i++) {
-        //     next = iterator.next();
-        //     tempList.push(chatMap.get(next.value));
-        //     console.log(tempList);
-        //     console.log(next);
-        //     console.log(chatMap.get(next.value));
-        // }
-    }, []);
-
     const changeClick = (chatId)=> {
         let selectedMessage;
         chatsList.forEach(message => { 

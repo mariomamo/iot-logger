@@ -1,6 +1,7 @@
-id: "2"
-name: 'Air conditioner'
-image: 'https://previews.123rf.com/images/artdigvision/artdigvision1712/artdigvision171200140/91350175-air-conditioner-icon-flat-design.jpg'
+chat_id: "3"
+name: 'Air conditioner bed room'
+sensor_type: "air-conditioner"
+image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfe3ft1wqiQUu1Kra38EezbmQTljHkFPSPzA&usqp=CAU'
 receive_topic_name: 'iot/sensors'
 send_topic_name: 'iot/web/sensors'
 topic_url: 'localhost'

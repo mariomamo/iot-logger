@@ -1,10 +1,9 @@
 import ast
 import logging
+from threading import Thread
 
 import pika
-import requests
 
-from dto.RisultatoDTO import RisultatoDTO
 from interfaces.Observable import Observable
 from interfaces.Observator import Observator
 
@@ -15,48 +14,49 @@ logger.setLevel(logging.INFO)
 
 class RabbitMQConnector(Observable, Observator):
 
-    def __init__(self, name: str, image: str, topic_name: str, send_topic_name: str, topic_id: str, topic_url: str):
+    def __init__(self, name: str, image: str, receive_topic_name: str, send_topic_name: str, topic_id: str,
+                 topic_url: str):
         self.__topic_url = topic_url
         self.__name = name
         self.__image = image
         connection = pika.BlockingConnection(pika.ConnectionParameters(self.__topic_url))
-        receive_topic_name = f'{topic_name}/{topic_id}'
+        self.__receive_topic_name = f'{receive_topic_name}/{topic_id}'
         self.__topic_id = topic_id
-        self.__receive_channel = self.__getReceiveChannel(receive_topic_name, connection)
+        self.__send_topic_name = send_topic_name
         self.__send_channel = self.__get_send_channel(send_topic_name, connection)
+        self.__receive_channel = self.__getReceiveChannel(self.__receive_topic_name, connection)
         self.__observators = []
-        self.__send_channel.basic_publish(exchange="", routing_key=send_topic_name,
-                                          body=self.__get_body_payload(topic_id))
+        self.notifyConnectedStatus(send_topic_name, topic_id)
+        self.__headers = {'Content-Type': 'application/json'}
+        self.__start_listening()
 
-        self.__headers = {'Content-Type': "application/json", 'Accept': "application/json"}
-        requests.get("http://192.168.1.52:4444/iot/logger/sendlog", headers=self.__headers,
-                     json=self.__getResponseMEssage("text", "I'm waiting for a command"))
+    def notifyConnectedStatus(self, send_topic_name, topic_id):
+        message = self.__getResponseMEssage("text", "I'm ready for getting messages!", asString=False)
+        logger.info(f'Sent on {send_topic_name} value {message}')
+        self.__send_channel.basic_publish(exchange="", routing_key=send_topic_name,
+                                          body=message)
 
     def __callBack(self, channel, method, properties, body):
         body = ast.literal_eval(body.decode("UTF-8").__str__())
-        output = self.__getResponseMEssage("text", "Command not found")
+        logger.info(f'New message received from topic {self.__receive_topic_name} = {body}')
+        self.__notify_all_listeners(channel, method, properties, body)
 
-        if body['payload']['message'].lower() == 'lights on':
-            output = self.__getResponseMEssage("text", "Done... don't forget to turn them off ")
-        elif body['payload']['message'].lower() == 'lights off':
-            output = self.__getResponseMEssage("text", 'Ok!')
-
-        headers = {'Content-Type': "application/json", 'Accept': "application/json"}
-        requests.get("http://192.168.1.52:4444/iot/logger/sendlog", headers=headers, json=output.__str__())
-
-    def __getResponseMEssage(self, type, message):
-        output = {
+    def __getResponseMEssage(self, type, message, asString: bool = True):
+        payload = {
+            "sensorType": "car",
             "chatId": self.__topic_id,
             "name": self.__name,
-            "ora": "20:00",
             "img": self.__image,
             "payload": {
+                "hour": "20:00",
                 "type": type,
                 "message": message
             }
         }
 
-        return output
+        if not asString:
+            payload = bytes(payload.__str__(), encoding="UTF-8")
+        return payload
 
     def __getReceiveChannel(self, topic_name, connection):
         try:
@@ -76,36 +76,21 @@ class RabbitMQConnector(Observable, Observator):
         return sendChannel
 
     def __notify_all_listeners(self, *args, **kwargs):
+        logger.info(f'Notify all {self.__observators.__len__()} listeners')
         for observator in self.__observators:
             logger.info(f'Mo notifico')
             observator.on_notify(*args, **kwargs)
 
-    def start(self):
+    def __start_listening(self):
         if self.__receive_channel is not None:
-            self.__receive_channel.start_consuming()
+            Thread(target=lambda: self.__receive_channel.start_consuming()).start()
         else:
             logger.error(f'Broker is not connected!')
 
     def subscribe(self, observator: Observator):
         self.__observators.append(observator)
 
-    def __get_body_payload(self, topic_id):
-        payload = {
-            "chatId": topic_id,
-            "name": "Phone",
-            "ora": "20:00",
-            "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Circle-icons-car.svg/1200px-Circle-icons-car.svg.png",
-            "payload": {
-                "type": "text",
-                "message": "My position is {position}"
-            }
-        }
-
-        return bytes(payload.__str__(), encoding="UTF-8")
-
     def on_notify(self, *args, **kwargs):
-        logger.info(f'Ricevuto')
-        # self.__send_channel.basic_publish(exchange='', routing_key=config_dict['topic_name'],
-        #                                   body=bytes(payload.__str__(), encoding="UTF-8"))
-
-    pass
+        logger.info(f'Ricevuto {args[0]}')
+        self.__send_channel.basic_publish(exchange="", routing_key=self.__send_topic_name,
+                                          body=args[0].__str__().encode())

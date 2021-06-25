@@ -26,6 +26,14 @@ const MessageChatBox = ({id, name, lastMessage, img, selected, onClick})=> {
         setOraStyle("ora");
     }
 
+    const getPreviewMessage = ()=> {
+        return (lastMessage != undefined && lastMessage != null && lastMessage.message != undefined && lastMessage.message != null) ? lastMessage.message : "undefined"
+    }
+
+    const getHourText = ()=> {
+        return (lastMessage !== undefined && lastMessage !== null && lastMessage.hour !== undefined && lastMessage.hour !== null) ? lastMessage.hour : "00:00"
+    }
+
     return (
         <div onClick={() => onClick(id)} className={chatboxClassName}>
             <div className='propic'>
@@ -36,11 +44,11 @@ const MessageChatBox = ({id, name, lastMessage, img, selected, onClick})=> {
                     {name}
                 </div>
                 <div className='messagepreview'>
-                    {lastMessage.message}
+                    {getPreviewMessage()}
                 </div>
             </div>
             <div className={oraStyle}>
-                {lastMessage.hour}
+                {getHourText()}
             </div>
         </div>
     )
