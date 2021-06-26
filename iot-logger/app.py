@@ -46,15 +46,11 @@ def runApiServer():
     # DEV
     app.run(host=host_ip, port=config_dict['rest_port'])
     # PRODUCTION
-    # waitress.serve(app, listen=f'{host_ip}:{config_dict["port"]}')
+    # waitress.serve(app, listen=f'{host_ip}:{config_dict["rest_port"]}')
 
 
 def runSocketIOServer():
     socketIOServer.start()
-
-
-def runMQTTClient():
-    rabbitMQConnector.start()
 
 
 if __name__ == '__main__':
@@ -67,4 +63,6 @@ if __name__ == '__main__':
 
     Thread(target=runApiServer).start()
     Thread(target=runSocketIOServer).start()
-    Thread(target=runMQTTClient).start()
+
+    while True:
+        pass

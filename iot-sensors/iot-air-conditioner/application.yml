@@ -1,7 +1,0 @@
-chat_id: "3"
-name: 'Air conditioner bed room'
-sensor_type: "air-conditioner"
-image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfe3ft1wqiQUu1Kra38EezbmQTljHkFPSPzA&usqp=CAU'
-receive_topic_name: 'iot/sensors'
-send_topic_name: 'iot/web/sensors'
-topic_url: 'localhost'

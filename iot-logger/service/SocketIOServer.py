@@ -30,7 +30,7 @@ class SocketIOServer(Observable, Observator):
         self.socketio.on_event("message", self.__message_handler)
         self.socketio.on_event("join", lambda msg: join_room(msg))
 
-    def __on_connect(self, data):
+    def __on_connect(self):
         logger.info(f'Someone is connected')
         for device in self.__connectedDevices.values():
             self.__instance.socketio.emit("message", device)

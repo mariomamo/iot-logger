@@ -1,8 +1,3 @@
-import ast
-
-import requests
-
-
 class Event:
     def __init__(self, body):
         self.__body = body
@@ -37,12 +32,19 @@ class Context:
 
 # ########################################### COPY IMPORTS ###########################################
 # ===========================================> COPY THIS <===========================================
+import ast
+import requests
+
+
 def handler(context, event):
     body = event.body.decode('UTF-8')
     body = ast.literal_eval(body.__str__())
 
+    context.logger.info(f'body: {body}')
+
     headers = {'Content-Type': "application/json", 'Accept': "application/json"}
     payload = {
+        "userId": body['userId'],
         "sensorType": body['sensorType'],
         "chatId": body['chatId'],
         "name": body['name'],
@@ -66,7 +68,7 @@ def handler(context, event):
 # ===========================================> END COPY <===========================================
 
 if __name__ == '__main__':
-    body = b'{\'sensorType\': \'car\',\'chatId\': \'1\', \'name\': \'Car\', \'img\': \'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Circle-icons-car.svg/1200px-Circle-icons-car.svg.png\', \'payload\': {\'hour\': \'20:00\', \'type\': \'text\', \'message\': "I\'m connected!"}}'
+    body = b'{\'userId\':\'123456\', \'sensorType\': \'car\',\'chatId\': \'1\', \'name\': \'Car\', \'img\': \'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Circle-icons-car.svg/1200px-Circle-icons-car.svg.png\', \'payload\': {\'hour\': \'20:00\', \'type\': \'text\', \'message\': "I\'m connected!"}}'
     event = Event(body)
     context = Context()
 
