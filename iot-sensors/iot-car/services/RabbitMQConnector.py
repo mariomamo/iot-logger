@@ -8,6 +8,7 @@ from dto.PayloadDTO import PayloadDTO
 from dto.ResponseMessageDTO import ResponseMessageDTO
 from interfaces.Observable import Observable
 from interfaces.Observator import Observator
+from utility import HourPicker
 
 logging.basicConfig()
 logger = logging.getLogger(f'{__name__}.log')
@@ -17,15 +18,15 @@ logger.setLevel(logging.INFO)
 class RabbitMQConnector(Observable, Observator):
 
     def __init__(self, name: str, image: str, receive_topic_name: str, send_topic_name: str, topic_id: str,
-                 topic_url: str):
-        self.__topic_url = topic_url
+                 topic_url: str, hourPicker: HourPicker):
         self.__name = name
         self.__image = image
-        connection = pika.BlockingConnection(pika.ConnectionParameters(self.__topic_url))
         self.__receive_topic_name = f'{receive_topic_name}/{topic_id}'
-        print(self.__receive_topic_name)
-        self.__topic_id = topic_id
         self.__send_topic_name = send_topic_name
+        self.__topic_id = topic_id
+        self.__topic_url = topic_url
+        self.__hourPicker = hourPicker
+        connection = pika.BlockingConnection(pika.ConnectionParameters(self.__topic_url))
         self.__send_channel = self.__get_send_channel(send_topic_name, connection)
         self.__receive_channel = self.__getReceiveChannel(self.__receive_topic_name, connection)
         self.__observators = []
@@ -34,7 +35,7 @@ class RabbitMQConnector(Observable, Observator):
 
     def notifyConnectedStatus(self, sensor_type, send_topic_name, topic_id, image, message):
         now = datetime.datetime.now()
-        payload = PayloadDTO(f'{now.hour}:{now.minute}', "text", message)
+        payload = PayloadDTO(self.__hourPicker.getHour(), "text", message)
         responseMessageDTO = ResponseMessageDTO(sensor_type, topic_id, self.__name, image, payload)
         print(responseMessageDTO)
         logger.info(f'Sent on {send_topic_name} value {responseMessageDTO}')
