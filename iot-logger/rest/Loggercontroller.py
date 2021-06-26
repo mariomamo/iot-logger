@@ -22,7 +22,6 @@ class Message(Resource):
     def get(self):
         payload = request.json
         logging.info(f'Ho ricevuto {payload}')
-        print(f'Ho ricevuto {payload}')
         ris = RisultatoDTO()
         ris.setSuccess(200)
         ris.setData(payload)

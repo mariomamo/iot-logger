@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useState } from 'react';
+import React, { createRef, useEffect } from 'react';
 import 'antd/dist/antd.css';
 import './chatbox.css';
 import Message from './Message/message';
@@ -20,6 +20,7 @@ const ChatBox = ({sensorType, chatId, name, messages, onSend})=> {
         if (message !== undefined) {
             switch (message.type) {
                 case "text": return renderTextMessage(message, indice);
+                default: return <div>NOT SUPPORTED</div>
             }
         }
     }
@@ -41,11 +42,11 @@ const ChatBox = ({sensorType, chatId, name, messages, onSend})=> {
     }
 
     const getButtonsReplyTypes = ()=> {
-        if (sensorType == "car") {
+        if (sensorType === "car") {
             return ["position", "engine on", "engine off", "status"]
-        } else if (sensorType == "home") {
+        } else if (sensorType === "home") {
             return ["lights on", "lights off", "activate alarm", "deactivate alarm"]
-        } else if (sensorType == "air-conditioner") {
+        } else if (sensorType === "air-conditioner") {
             return ["set 20°", "set 22°", "set 24°", "set 26°", "set 28°", "set 30°", "status"]
         }
     }

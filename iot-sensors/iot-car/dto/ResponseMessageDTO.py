@@ -3,12 +3,21 @@ import math
 
 
 class ResponseMessageDTO:
-    def __init__(self, sensorType, chatId, name, image, payload):
+    def __init__(self, sensorType, chatId, name, image, payload, userId=""):
+        self.__userId = userId
         self.__sensorType = sensorType
         self.__chatId = chatId
         self.__name = name
         self.__image = image
         self.__payload = payload
+
+    @property
+    def userId(self):
+        return self.__userId
+
+    @userId.setter
+    def userId(self, userId):
+        self.__userId = userId
 
     @property
     def sensorType(self):
@@ -32,6 +41,7 @@ class ResponseMessageDTO:
 
     def __str__(self):
         res = {
+            "userId": self.__userId,
             "sensorType": self.__sensorType,
             "chatId": self.__chatId,
             "name": self.__name,

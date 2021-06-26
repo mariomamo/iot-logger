@@ -27,7 +27,7 @@ const MessageChatBox = ({id, name, lastMessage, img, selected, onClick})=> {
     }
 
     const getPreviewMessage = ()=> {
-        return (lastMessage != undefined && lastMessage != null && lastMessage.message != undefined && lastMessage.message != null) ? lastMessage.message : "undefined"
+        return (lastMessage !== undefined && lastMessage !== null && lastMessage.message !== undefined && lastMessage.message !== null) ? lastMessage.message : "undefined"
     }
 
     const getHourText = ()=> {

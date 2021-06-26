@@ -5,20 +5,20 @@ import socketio from "socket.io-client";
 import './chat.css';
 import SplashBox from './SplashBox/splashbox';
 
-const Chat = ()=> {
+const Chat = ({port, url})=> {
     const [selectedChat, setSelectedChat] = useState({});
     const [chatsList, setChatsList] = useState([]);
     const [client, setClient] = useState(null);
-    const [url] = useState("http://127.0.0.1");
-    const [port] = useState(5000);
+    const [userId, setUSerId] = useState("");
 
     useEffect(()=> {
         if (client !== null) {
             client.on("connect", ()=> {
-                console.log("Connected!");
+                setUSerId(client.io.engine.id);
             });
 
             client.on("message", (message)=> {
+                console.log("Ho ricevuto", message);
                 if (contains(chatsList, message.data.chatId)) {
                     updateExistingMessage(getChatFromList, chatsList, message);
                 } else {
@@ -28,6 +28,13 @@ const Chat = ()=> {
             });
         }
     }, [client]);
+
+    useEffect(() => {
+        if (client !== null){
+            client.emit("join", userId);
+        }
+        console.log("Connected with id", userId, "!");
+    }, [userId, client])
 
     useEffect(() => {
         setClient(socketio.connect(url + ":" + port));
@@ -77,7 +84,7 @@ const Chat = ()=> {
     //             messages: []
     //         }
     //     ]);
-    }, []);
+    }, [url, port]);
 
     const addNewMessage = (message)=> {
         chatsList.push(getTNewChatTemplate(message.data, false));
@@ -90,9 +97,20 @@ const Chat = ()=> {
         existingMessage.messages.push(message.data.payload);
     }
 
-    const getPayloadMessage = (type, isSended, message, hour) => {
+    const getHour = ()=> {
+        let today = new Date();
+        let hour = today.getHours();
+        let minutes = today.getMinutes();
+        return add0IfNeeded(hour) + ":" + add0IfNeeded(minutes);
+    }
+
+    const add0IfNeeded = (value)=> {
+        return value < 10 ? "0" + value : value
+    }
+
+    const getPayloadMessage = (type, isSended, message) => {
         return {
-            hour: hour,
+            hour: getHour(),
             type: type,
             isSended: isSended,
             message: message
@@ -114,22 +132,27 @@ const Chat = ()=> {
     }
     
     const contains = (list, element) => {
-        return list.some(arrayElement => arrayElement.chatId == element)
+        return list
+        .filter(arrayElement => arrayElement !== undefined)
+        .some(arrayElement => arrayElement.chatId === element)
     }
 
     const getChatFromList = (list, id) => {
-        return list.filter(elemento => elemento.chatId == id)[0];
+        return list
+        .filter(arrayElement => arrayElement !== undefined)
+        .filter(elemento => elemento.chatId === id)[0];
     }
 
     const handleClick = (chat)=> {
         setSelectedChat(chat);
     }
 
-    const getMessageToSend = (chatId, msg, hour, type) => {
+    const getMessageToSend = (chatId, msg, type) => {
         return {
+            userId: userId,
             chatId: chatId,
             payload: {
-                hour: hour,
+                hour: getHour(),
                 type: type,
                 message: msg
             }
@@ -138,9 +161,9 @@ const Chat = ()=> {
 
     const onSend = (chatId, msg)=> {
         let currentChat = getChatFromList(chatsList, chatId);
-        currentChat.messages.push(getPayloadMessage("text", true, msg, "00:59"));
+        currentChat.messages.push(getPayloadMessage("text", true, msg));
         setChatsList([...chatsList]);
-        client.emit('message', getMessageToSend(chatId, msg, "00:59", "text"));
+        client.emit('message', getMessageToSend(chatId, msg, "text"));
     }
 
     const renderElement = (selectedChat)=> {

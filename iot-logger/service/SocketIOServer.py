@@ -1,8 +1,8 @@
 import ast
 import logging
 
-from flask import Flask
-from flask_socketio import SocketIO
+from flask import Flask, request, session
+from flask_socketio import SocketIO, join_room, send
 
 from interfaces.Observable import Observable
 from interfaces.Observator import Observator
@@ -23,20 +23,30 @@ class SocketIOServer(Observable, Observator):
     def __init__(self, name=""):
         self.app = Flask(name)
         self.__observators = []
+        self.__connectedDevices = {}
         self.socketio = SocketIO(self.app, cors_allowed_origins="*")
 
-        self.socketio.on_event("connect", lambda data: self.__message_handler)
+        self.socketio.on_event("connect", self.__on_connect)
         self.socketio.on_event("message", self.__message_handler)
+        self.socketio.on_event("join", lambda msg: join_room(msg))
 
     def __on_connect(self, data):
-        print(f'Someone is connected - {data}')
+        logger.info(f'Someone is connected')
+        for device in self.__connectedDevices.values():
+            self.__instance.socketio.emit("message", device)
 
     def __message_handler(self, data):
         logger.info(f'Recevied {data}')
         self.__notify_all_listeners(data)
 
     def send(self, event: str, body):
-        self.__instance.socketio.emit(event, body)
+        chatId = body['data']['chatId']
+        if chatId not in self.__connectedDevices:
+            self.__connectedDevices[chatId] = body
+        logger.info(f'Invio {body}')
+        room = body['data']['userId']
+
+        self.__instance.socketio.emit(event, body, room=room)
 
     def start(self):
         self.__instance.socketio.run(self.__instance.app)

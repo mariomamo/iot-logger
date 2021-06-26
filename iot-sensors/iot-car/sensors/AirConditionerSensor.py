@@ -17,6 +17,7 @@ class AirConditionerSensor(Sensor):
     def message_handler(self, body):
         message = "I'm sorry, i'm not understand your command"
         payload = PayloadDTO(self.getHour(), "text", message)
+        userId = body['userId']
 
         if body['payload']['message'].lower() == 'set 20°':
             message = "Temperature setted to 20°"
@@ -41,4 +42,4 @@ class AirConditionerSensor(Sensor):
 
         payload.message = message
 
-        return ResponseMessageDTO(self.sensorType, self.chatId, self.name, self.image, payload)
+        return ResponseMessageDTO(self.sensorType, self.chatId, self.name, self.image, payload, userId=userId)

@@ -67,6 +67,7 @@ class RabbitMQConnector(Observable, Observator):
     def __get_body_payload(self, body):
         now = datetime.datetime.now()
         payload = {
+            "userId": body['userId'],
             "chatId": body['chatId'],
             "ora": f'{now.hour}:{now.minute}',
             "payload": {

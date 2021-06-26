@@ -16,6 +16,7 @@ class CarSensor(Sensor):
     def message_handler(self, body):
         message = "I'm sorry, i'm not understand your command"
         payload = PayloadDTO(self.getHour(), "text", message)
+        userId = body['userId']
 
         if body['payload']['message'].lower() == 'position':
             message = "This is my position {position}"
@@ -28,4 +29,4 @@ class CarSensor(Sensor):
 
         payload.message = message
 
-        return ResponseMessageDTO(self.sensorType, self.chatId, self.name, self.image, payload)
+        return ResponseMessageDTO(self.sensorType, self.chatId, self.name, self.image, payload, userId=userId)

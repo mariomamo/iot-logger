@@ -34,10 +34,8 @@ class RabbitMQConnector(Observable, Observator):
         self.__start_listening()
 
     def notifyConnectedStatus(self, sensor_type, send_topic_name, topic_id, image, message):
-        now = datetime.datetime.now()
         payload = PayloadDTO(self.__hourPicker.getHour(), "text", message)
         responseMessageDTO = ResponseMessageDTO(sensor_type, topic_id, self.__name, image, payload)
-        print(responseMessageDTO)
         logger.info(f'Sent on {send_topic_name} value {responseMessageDTO}')
         self.__send_channel.basic_publish(exchange="", routing_key=send_topic_name,
                                           body=bytes(responseMessageDTO.__str__(), encoding="UTF-8"))
