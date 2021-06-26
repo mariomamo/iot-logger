@@ -8,15 +8,12 @@ greenlet==0.4.17
 Twisted==20.3.0
 pyrsistent==0.17.3
 lxml==4.6.1
-importlib_metadata==2.0.0
 typing_extensions==3.7.4.3
 ujson==3.2.0
 blinker==1.4
 brotli==1.0.9
 contextvars==2.4
-dataclasses==0.8
 dnspython==2.1.0
-functools32==3.2.3-2
 ipaddr==2.2.0
 jsonpointer==2.1
 keyring==23.0.1
@@ -30,7 +27,6 @@ python-dotenv==0.18.0
 rfc3339_validator==0.1.4
 rfc3986_validator==0.1.1
 rfc3987==1.3.8
-secrets==1.0.2
 strict_rfc3339==0.7
 uritemplate==3.0.1
 watchdog==2.1.2
