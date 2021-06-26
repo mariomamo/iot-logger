@@ -9,7 +9,7 @@ sensors:
   - chat_id: "2"
     name: 'My house'
     sensor_type: "home"
-    image: 'https://www.rawshorts.com/freeicons/wp-content/uploads/2017/01/blue_repicthousebase_1484336386-1.png'
+    image: 'https://media.istockphoto.com/vectors/smart-home-vector-icon-with-airwaves-isolated-on-white-background-vector-id1186712143?k=6&m=1186712143&s=170667a&w=0&h=zZoIDzrMKXkUERFYeuSnYhiuSxZ22IcXT0RPIanZxG0='
     receive_topic_name: 'iot/sensors'
     send_topic_name: 'iot/web/sensors'
     topic_url: 'localhost'

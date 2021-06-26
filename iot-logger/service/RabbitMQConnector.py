@@ -26,29 +26,29 @@ class RabbitMQConnector(Observable, Observator):
         self.__send_topic_name = send_topic_name
         self.__topic_url = topic_url
         self.__connection = pika.BlockingConnection(pika.ConnectionParameters(self.__topic_url))
-        self.__channel = self.__getReceiveChannel()
+        # self.__channel = self.__getReceiveChannel()
         self.__observators = []
         self.__sendChannels = {}
 
-    def __callBack(self, channel, method, properties, body):
-        ris = RisultatoDTO()
-        ris.setSuccess(200)
-        body = ast.literal_eval(body.decode("UTF-8").__str__())
-        logger.info(f'New message received from topic {self.__receive_topic_name} = {body}')
-        ris.setData(body)
-        self.__notify_all_listeners(channel, method, properties, ris)
+    # def __callBack(self, channel, method, properties, body):
+    #     ris = RisultatoDTO()
+    #     ris.setSuccess(200)
+    #     body = ast.literal_eval(body.decode("UTF-8").__str__())
+    #     logger.info(f'New message received from topic {self.__receive_topic_name} = {body}')
+    #     ris.setData(body)
+    #     self.__notify_all_listeners(channel, method, properties, ris)
 
-    def __getReceiveChannel(self):
-        try:
-            channel = self.__connection.channel()
-            channel.queue_declare(queue=self.__receive_topic_name)
-            channel.basic_consume(queue=self.__receive_topic_name, on_message_callback=self.__callBack, auto_ack=True)
-            logger.info(f'[RabbitMQConnector] Starting consuming')
-        except Exception as ex:
-            logger.error(f'Connection with broker failed!')
-            return None
-
-        return channel
+    # def __getReceiveChannel(self):
+    #     try:
+    #         channel = self.__connection.channel()
+    #         channel.queue_declare(queue=self.__receive_topic_name)
+    #         channel.basic_consume(queue=self.__receive_topic_name, on_message_callback=self.__callBack, auto_ack=True)
+    #         logger.info(f'[RabbitMQConnector] Starting consuming')
+    #     except Exception as ex:
+    #         logger.error(f'Connection with broker failed!')
+    #         return None
+    #
+    #     return channel
 
     def __get_send_channel(self, send_topic_name, connection):
         sendChannel = connection.channel()
