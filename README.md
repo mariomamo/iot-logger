@@ -128,20 +128,20 @@ In some cases you need to deploy only some parts of this projects for load balan
 
 Open your terminal and copy/paste this line
 
-```shell
-docker run -p 9000:15672 -p 1883:1883 -p 5672:5672 cyrilix/rabbitmq-mqtt
+```bash
+docker run -p 9000:15672 -p 1883:1883 -p 5672:5672 -d --name rabbitMQ cyrilix/rabbitmq-mqtt
 ```
 
 :heavy_check_mark: It is also available for ARM processors
 ```bash
-docker run -p 9000:15672 -p 1883:1883 -p 5672:5672 arm32v7/rabbitmq
+docker run -p 9000:15672 -p 1883:1883 -p 5672:5672 -d --name rabbitMQ arm32v7/rabbitmq
 ```
 
 ### :two: Nuclio
 Open your terminal and copy/paste this line
 
 ```bash
-docker run -p 8070:8070 -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp nuclio/dashboard:stable-amd64
+docker run -p 8070:8070 -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp -d --name nuclio nuclio/dashboard:stable-amd64
 ```
 
 :x: It is not available for ARM processors
@@ -149,7 +149,7 @@ docker run -p 8070:8070 -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tm
 ### :three: IoT logger
 
 Go to ```iot-logger``` folder
-:warning: Check the directory where you are. You should be in ```iot-project``` folder :warning:
+:warning: Check the directory where you are :warning:
 
 ```bash
 cd iot-logger
@@ -167,26 +167,26 @@ docker run -v <path_where_you_cloned_project>\iot-project\iot-logger:/logger -dp
 ```
 
 ### :four: IoT sensors
-Go to ```iot-logger``` folder
-:warning: Check the directory where you are. You should be in ```iot-project``` folder :warning:
+Go to ```iot-sensors``` folder
+:warning: Check the directory where you are :warning:
 
 ```bash
-cd iot-logger
+cd iot-sensors
 ```
 Build the image
 
 ```docker
-docker build -t iot-logger .
+docker build -t iot-sensors .
 ```
 Run container
 
 ```docker
-docker run -v <path_where_you_cloned_project>\iot-project\iot-logger:/sensors -d --name iot-logger -it iot-logger
+docker run -v <path_where_you_cloned_project>\iot-project\iot-sensors:/sensors -d --name iot-sensors -it iot-sensors
 ```
 
 ### :five: IoT frontend
 Go to ```iot-front-end``` folder
-:warning: Check the directory where you are. You should be in ```iot-project``` folder :warning:
+:warning: Check the directory where you are :warning:
 
 ```bash
 cd iot-front-end
@@ -223,3 +223,6 @@ response = requests.get("http://<INSERT_YOUR_LOCA_IP_ADDRESS_HERE>:4444/iot/logg
 
 Now you can deploy your function. When your function has been deployed go to [IoT logger webapp](http://localhost/) and restart ```iot-logger``` container. When ```iot-logger``` will be restarted it will send some information to the ```iot-logger``` and you will se these informations on the webapp. Now you can send commands to devices and you can read their responses.
 Enjoy :)
+
+# :warning: Important
+Every time you restart nuclio you need to re-deploy nuclio function
