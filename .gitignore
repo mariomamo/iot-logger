@@ -7,7 +7,6 @@ scripts/flow/*/.flowconfig
 */.idea
 */Lib
 */Scripts
-iot-front-end/build/
 iot-logger/.idea/
 iot-logger/Scripts
 iot-logger/Lib
