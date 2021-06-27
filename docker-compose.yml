@@ -47,6 +47,6 @@ services:
       - "80:80"
     container_name: iot-frontend
     volumes:
-      - ./iot-front-end/build:/usr/local/apache2/htdocs
+      - ./iot-front-end/compiled:/usr/local/apache2/htdocs
     depends_on:
       - iot-logger

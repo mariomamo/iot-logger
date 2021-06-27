@@ -40,7 +40,7 @@ git clone https://github.com/mariomamo/iot-project
 
 Before starting you need to modify some configurations files.<br>
 :one: Change IP address in front-end web app
-Go to ```\iot-project\iot-front-end\build``` and edit ```index.html``` file. You can find a div with "root" id, you need to change the IP address in url property with yours.
+Go to ```\iot-project\iot-front-end\compiled``` and edit ```index.html``` file. You can find a div with "root" id, you need to change the IP address in url property with yours.
 
 ```html
 <div id="root" url="http://<INSERT_YOUR_IP_ADDRESS_HERE>" port="5000"></div>
@@ -192,7 +192,7 @@ cd iot-front-end
 In questo caso non abbiamo bisogno di un dockerfile
 Run docker
 ```bash
-docker run -v <path_where_you_cloned_project>\iot-project\iot-front-end\build:/usr/local/apache2/htdocs/ -dp 80:80 --name iot-frontend httpd:2.4
+docker run -v <path_where_you_cloned_project>\iot-project\iot-front-end\compiled:/usr/local/apache2/htdocs/ -dp 80:80 --name iot-frontend httpd:2.4
 ```
 
 ## :gear: Nuclio configuration
