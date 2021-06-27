@@ -64,7 +64,7 @@ rest_port: 4444
 :warning: ```rest_port``` is the port used for REST API. :warning:<br>
 :warning: If you want to change this port remember to change the port inside nuclio script also :warning:
 
-Go to ```iot-project\iot-sensors``` and edit ```application.yml``` file.
+Go to ```iot-project\iot-logger``` and edit ```application.yml``` file.
 
 ```yml
 sensors:  
@@ -116,7 +116,7 @@ docker-compose up --build -d
 
  <img src="readme\docker-compose.png" />
 
-After this operation some containers (iot-logger and iot-sensors) can fail. This is because rabbitMQ container is not ready. You can simply avoid this by restarting failing containers.
+After this operation some containers (iot-logger and iot-logger) can fail. This is because rabbitMQ container is not ready. You can simply avoid this by restarting failing containers.
 
  <img src="readme\container_fail.png" />
 
@@ -165,21 +165,21 @@ docker run -v <path_where_you_cloned_project>\iot-project\iot-logger:/logger -dp
 ```
 
 ### :four: IoT sensors
-Go to ```iot-sensors``` folder
+Go to ```iot-logger``` folder
 :warning: Check the directory where you are. You should be in ```iot-project``` folder :warning:
 
 ```bash
-cd iot-sensors
+cd iot-logger
 ```
 Build the image
 
 ```docker
-docker build -t iot-sensors .
+docker build -t iot-logger .
 ```
 Run container
 
 ```docker
-docker run -v <path_where_you_cloned_project>\iot-project\iot-sensors:/sensors -d --name iot-sensors -it iot-sensors
+docker run -v <path_where_you_cloned_project>\iot-project\iot-logger:/sensors -d --name iot-logger -it iot-logger
 ```
 
 ### :five: IoT frontend
@@ -219,5 +219,5 @@ In the next window you should change the existing IP addres at line <b>25</b> wi
 response = requests.get("http://<INSERT_YOUR_LOCA_IP_ADDRESS_HERE>:4444/iot/logger/sendlog", headers=headers, json=payload)
 ```
 
-Now you can deploy your function. When your function has been deployed go to [IoT logger webapp](http://localhost/) and restart ```iot-sensors``` container. When ```iot-sensors``` will be restarted it will send some information to the ```iot-logger``` and you will se these informations on the webapp. Now you can send commands to devices and you can read their responses.
+Now you can deploy your function. When your function has been deployed go to [IoT logger webapp](http://localhost/) and restart ```iot-logger``` container. When ```iot-logger``` will be restarted it will send some information to the ```iot-logger``` and you will se these informations on the webapp. Now you can send commands to devices and you can read their responses.
 Enjoy :)
