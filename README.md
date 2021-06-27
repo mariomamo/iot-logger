@@ -1,3 +1,4 @@
+
 # <img src="https://image.flaticon.com/icons/png/512/1998/1998618.png" width="40" height="40" /> IoT - logger :robot:
 
 IoT logger is an IoT architecture for gathering informations about IoT sensors. It is based on RabbitMQ queues and works with Nuclio.
@@ -11,6 +12,13 @@ From  the [Nuclio](https://nuclio.io/) home page:
 > Nuclio is an open source and managed serverless platform used to minimize development and maintenance overhead and automate the deployment of data-science based applications
 
 ## <img src="https://image.flaticon.com/icons/png/512/4987/4987493.png" width="40" height="40"/> Architecture
+
+The architecture is composed by some sensors that send informations about their status on a queue (```iot/web/sensors```). When a new message is incoming on this queue a nuclio function is triggered. This function send an HTTP request to a middleware written in <b>python</b> (```http://<service_url>:<service_port>/iot/logger/sendlog```).<br>
+The middleware is in communication with a UI web based made in <b>React.js</b> by a <b>socket-io</b> connection.<br>
+With this GUI we can read the status of all sensors connected and we can change their status. When we send a message from GUI to middleware this message will be send on another queue (```iot/sensor/{sensor_id}```).<br>
+Each sensor is connected to their queue by own <b>sensor_id</b>.
+
+<img src="readme\architecture.png"/>
 
 ## :rocket: Installation
 The project is composed of 5 parts
@@ -30,7 +38,7 @@ git clone https://github.com/mariomamo/iot-project
 
 ## :gear: Some configuration before starting
 
-Before starting you need to modify some configurations files.
+Before starting you need to modify some configurations files.<br>
 :one: Change IP address in front-end web app
 Go to ```\iot-project\iot-front-end\build``` and edit ```index.html``` file. You can find a div with "root" id, you need to change the IP address in url property with yours.
 
