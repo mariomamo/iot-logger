@@ -1,9 +1,7 @@
 
-# ![](https://image.flaticon.com/icons/png/512/1998/1998618.png=40x40) IoT - logger
+# <img src="https://image.flaticon.com/icons/png/512/1998/1998618.png" width:"40" height="40" /> IoT - logger
+<img src="https://image.flaticon.com/icons/png/512/1998/1998618.png"/>
 ![](https://image.flaticon.com/icons/png/512/1998/1998618.png =40x40)
-![](https://image.flaticon.com/icons/png/512/1998/1998618.png=40x40)
-ss
-![](https://image.flaticon.com/icons/png/512/1998/1998618.png)
 
 IoT logger is an IoT architecture for gathering informations about IoT sensors. It is based on RabbitMQ queues and works with Nuclio.
 
