@@ -61,26 +61,26 @@ Go to ```iot-project\iot-sensors``` and edit ```application.yml``` file.
 ```yml
 sensors:  
   - chat_id: "1"  
-	  name: 'Car'  
-	  sensor_type: "car"  
-	  image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Circle-icons-car.svg/1200px-Circle-icons-car.svg.png'  
-	  receive_topic_name: 'iot/sensors'  
-	  send_topic_name: 'iot/web/sensors'  
-	  topic_url: '192.168.1.59'  
+    name: 'Car'  
+    sensor_type: "car"  
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Circle-icons-car.svg/1200px-Circle-icons-car.svg.png'  
+    receive_topic_name: 'iot/sensors'  
+    send_topic_name: 'iot/web/sensors'  
+    topic_url: '192.168.1.59'  
   - chat_id: "2"  
-	  name: 'My house'  
-	  sensor_type: "home"  
-	  image: 'https://media.istockphoto.com/vectors/smart-home-vector-icon-with-airwaves-isolated-on-white-background-vector-id1186712143?k=6&m=1186712143&s=170667a&w=0&h=zZoIDzrMKXkUERFYeuSnYhiuSxZ22IcXT0RPIanZxG0='  
-	  receive_topic_name: 'iot/sensors'  
-	  send_topic_name: 'iot/web/sensors'  
-	  topic_url: '192.168.1.59'  
+    name: 'My house'  
+    sensor_type: "home"  
+    image: 'https://media.istockphoto.com/vectors/smart-home-vector-icon-with-airwaves-isolated-on-white-background-vector-id1186712143?k=6&m=1186712143&s=170667a&w=0&h=zZoIDzrMKXkUERFYeuSnYhiuSxZ22IcXT0RPIanZxG0='  
+    receive_topic_name: 'iot/sensors'  
+    send_topic_name: 'iot/web/sensors'  
+    topic_url: '192.168.1.59'  
   - chat_id: "3"  
-	  name: 'Bed room air conditioner'  
-	  sensor_type: "air-conditioner"  
-	  image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfe3ft1wqiQUu1Kra38EezbmQTljHkFPSPzA&usqp=CAU'  
-	  receive_topic_name: 'iot/sensors'  
-	  send_topic_name: 'iot/web/sensors'  
-	  topic_url: '192.168.1.59'
+    name: 'Bed room air conditioner'  
+    sensor_type: "air-conditioner"  
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfe3ft1wqiQUu1Kra38EezbmQTljHkFPSPzA&usqp=CAU'  
+    receive_topic_name: 'iot/sensors'  
+    send_topic_name: 'iot/web/sensors'  
+    topic_url: '192.168.1.59'
 ```
 
 You can simply add a new sensor adding a new element in the sensors array. You just have to add the required informations.
