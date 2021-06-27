@@ -1,0 +1,2 @@
+FROM httpd:2.4
+docker run -v C:\Users\Mario\Desktop\Mario\ServerlessComputing\iot-project\iot-front-end\build:/usr/local/apache2/htdocs/ -dp 80:80 --name iot-frontend httpd:2.4

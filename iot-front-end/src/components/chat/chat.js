@@ -18,7 +18,6 @@ const Chat = ({port, url})=> {
             });
 
             client.on("message", (message)=> {
-                console.log("Ho ricevuto", message);
                 if (contains(chatsList, message.data.chatId)) {
                     updateExistingMessage(getChatFromList, chatsList, message);
                 } else {
@@ -30,11 +29,11 @@ const Chat = ({port, url})=> {
     }, [client]);
 
     useEffect(() => {
-        if (client !== null){
+        if (client !== null && client !== undefined){
             client.emit("join", userId);
+            console.log("Connected with id", userId, "!");
         }
-        console.log("Connected with id", userId, "!");
-    }, [userId, client])
+    }, [userId])
 
     useEffect(() => {
         setClient(socketio.connect(url + ":" + port));

@@ -10,18 +10,19 @@ from service.SocketIOServer import SocketIOServer
 api, param = RisultatoDTO.get_api_and_param("clientrest")
 socketIOServer = SocketIOServer()
 
-logging.basicConfig()
-logger = logging.getLogger(f'{__name__}.log')
-logger.setLevel(logging.INFO)
-
 
 @api.route('/sendlog')
 class Message(Resource):
+    logging.basicConfig()
+    logger = logging.getLogger(f'{__name__}.log')
+    logger.setLevel(logging.INFO)
+
     @api.doc('get response from a message')
     @api.marshal_list_with(param)
     def get(self):
         payload = request.json
         logging.info(f'Ho ricevuto {payload}')
+        print(f'Ho ricevuto {payload}')
         ris = RisultatoDTO()
         ris.setSuccess(200)
         ris.setData(payload)

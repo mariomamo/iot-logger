@@ -88,7 +88,7 @@ class Sensor(Observator, Observable):
     def on_notify(self, *args, **kwargs):
         message = args[0]
         if message == "subscribed":
-            logger.info("A new subsriber is connected")
+            logger.info("A new subscriber is connected")
         elif message == "message":
             body = args[4]
 

@@ -1,6 +1,8 @@
+import logging
 import socket
 from threading import Thread
 
+import waitress
 import werkzeug
 import yaml
 from flask import Flask
@@ -13,6 +15,10 @@ from flask_restplus import Api
 from rest.Loggercontroller import api as loggerapi
 from service.SocketIOServer import SocketIOServer
 
+logging.basicConfig()
+logger = logging.getLogger(f'{__name__}.log')
+logger.setLevel(logging.INFO)
+
 
 def getConfigDict():
     yaml_config_path = "application.yml"
@@ -22,16 +28,17 @@ def getConfigDict():
 
 config_dict = getConfigDict()
 
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+# server_port = config_dict['port']
+host_ip = s.getsockname()[0]
+s.close()
+
 
 def runApiServer():
     global api
     # yaml_config_path = os.path.join(os.environ['CATALINA_HOME'], "conf", "configurazioni", "fenice", "chatbot", "application.yml")
     # yaml_config_path = os.path.join(os.environ['APP_HOME'], "application.yml")
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    # server_port = config_dict['port']
-    host_ip = s.getsockname()[0]
-    s.close()
     blueprint = Blueprint('api', __name__)
     api = Api(blueprint,
               title=config_dict['name'],
@@ -44,13 +51,15 @@ def runApiServer():
     app.register_blueprint(blueprint)
     app.app_context().push()
     # DEV
-    app.run(host=host_ip, port=config_dict['rest_port'])
+    # app.run(host=host_ip, port=config_dict['rest_port'])
     # PRODUCTION
-    # waitress.serve(app, listen=f'{host_ip}:{config_dict["rest_port"]}')
+    port = config_dict["rest_port"]
+    logger.info(f'[API SERVER RUNNIG] Server running on host {host_ip} and port {port}')
+    waitress.serve(app, listen=f'{host_ip}:{port}')
 
 
 def runSocketIOServer():
-    socketIOServer.start()
+    socketIOServer.start(host_ip, config_dict['socket_io_port'])
 
 
 if __name__ == '__main__':
@@ -64,5 +73,5 @@ if __name__ == '__main__':
     Thread(target=runApiServer).start()
     Thread(target=runSocketIOServer).start()
 
-    while True:
-        pass
+    # while True:
+    #     pass

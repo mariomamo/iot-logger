@@ -1,4 +1,5 @@
 import logging
+import time
 
 import werkzeug
 import yaml
@@ -45,12 +46,17 @@ def startSensor(sensor_type, chat_id, sensor_name, sensor_image, send_topic_name
     if sensor is not None:
         sensor.subscribe(rabbitMQConnector)
         rabbitMQConnector.subscribe(sensor)
+        rabbitMQConnector.start()
     else:
         logger.error(f"Invalid sensor type for {sensor_type}")
 
 
 if __name__ == '__main__':
+    time.sleep(5)
     config_dict = getConfigDict()
     for sensor in config_dict['sensors']:
         startSensor(sensor['sensor_type'], sensor['chat_id'], sensor['name'], sensor['image'],
                     sensor['send_topic_name'], sensor['receive_topic_name'], sensor['topic_url'])
+
+    # while True:
+    #     pass

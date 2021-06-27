@@ -1,6 +1,7 @@
 import ast
 import logging
 
+import waitress
 from flask import Flask, request, session
 from flask_socketio import SocketIO, join_room, send
 
@@ -26,14 +27,15 @@ class SocketIOServer(Observable, Observator):
         self.__connectedDevices = {}
         self.socketio = SocketIO(self.app, cors_allowed_origins="*")
 
-        self.socketio.on_event("connect", self.__on_connect)
         self.socketio.on_event("message", self.__message_handler)
-        self.socketio.on_event("join", lambda msg: join_room(msg))
+        self.socketio.on_event("join", self.__on_join)
 
-    def __on_connect(self):
-        logger.info(f'Someone is connected')
+    def __on_join(self, sid):
+        logger.info(f'{sid} joined')
+        join_room(sid)
         for device in self.__connectedDevices.values():
-            self.__instance.socketio.emit("message", device)
+            logger.info(f'Send device info {device}')
+            self.__instance.socketio.emit("message", device, room=sid)
 
     def __message_handler(self, data):
         logger.info(f'Recevied {data}')
@@ -43,21 +45,23 @@ class SocketIOServer(Observable, Observator):
         chatId = body['data']['chatId']
         if chatId not in self.__connectedDevices:
             self.__connectedDevices[chatId] = body
-        logger.info(f'Invio {body}')
         room = body['data']['userId']
+        logger.info(f'Invio {body} sulla room {room}')
 
         self.__instance.socketio.emit(event, body, room=room)
 
-    def start(self):
-        self.__instance.socketio.run(self.__instance.app)
+    def start(self, host_ip="", port=5000):
+        logger.info(f'[SOCKET IO SERVER RUNNIG] Server running on host {host_ip} and port {port}')
+        self.app.app_context().push()
+        waitress.serve(self.app, listen=f'{host_ip}:{port}')
 
     def subscribe(self, observator: Observator):
         self.__observators.append(observator)
 
     def on_notify(self, *args, **kwargs):
         data = ast.literal_eval(args[3].__str__())
-        self.__instance.socketio.emit("message", data)
         logger.info(f'[on_notify] Invio {data}')
+        self.__instance.socketio.emit("message", data)
 
     def __notify_all_listeners(self, *args, **kwargs):
         for observator in self.__observators:

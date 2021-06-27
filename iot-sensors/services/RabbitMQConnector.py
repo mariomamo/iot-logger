@@ -1,9 +1,9 @@
 import ast
-import datetime
 import logging
 from threading import Thread
 
 import pika
+
 from dto.PayloadDTO import PayloadDTO
 from dto.ResponseMessageDTO import ResponseMessageDTO
 from interfaces.Observable import Observable
@@ -15,10 +15,11 @@ logger = logging.getLogger(f'{__name__}.log')
 logger.setLevel(logging.INFO)
 
 
-class RabbitMQConnector(Observable, Observator):
+class RabbitMQConnector(Observable, Observator, Thread):
 
     def __init__(self, name: str, image: str, receive_topic_name: str, send_topic_name: str, topic_id: str,
                  topic_url: str, hourPicker: HourPicker):
+        Thread.__init__(self)
         self.__name = name
         self.__image = image
         self.__receive_topic_name = f'{receive_topic_name}/{topic_id}'
@@ -26,12 +27,11 @@ class RabbitMQConnector(Observable, Observator):
         self.__topic_id = topic_id
         self.__topic_url = topic_url
         self.__hourPicker = hourPicker
-        connection = pika.BlockingConnection(pika.ConnectionParameters(self.__topic_url))
-        self.__send_channel = self.__get_send_channel(send_topic_name, connection)
-        self.__receive_channel = self.__getReceiveChannel(self.__receive_topic_name, connection)
+        self.__connection = pika.BlockingConnection(pika.ConnectionParameters(self.__topic_url))
+        self.__send_channel = self.__get_send_channel(send_topic_name)
+        self.__receive_channel = self.__getReceiveChannel(self.__receive_topic_name)
         self.__observators = []
         self.__headers = {'Content-Type': 'application/json'}
-        self.__start_listening()
 
     def notifyConnectedStatus(self, sensor_type, send_topic_name, topic_id, image, message):
         payload = PayloadDTO(self.__hourPicker.getHour(), "text", message)
@@ -45,20 +45,20 @@ class RabbitMQConnector(Observable, Observator):
         logger.info(f'New message received from topic {self.__receive_topic_name} = {body}')
         self.__notify_all_listeners("message", channel, method, properties, body)
 
-    def __getReceiveChannel(self, topic_name, connection):
+    def __getReceiveChannel(self, topic_name):
         try:
-            receiveChannel = connection.channel()
+            receiveChannel = self.__connection.channel()
             receiveChannel.queue_declare(queue=topic_name)
             receiveChannel.basic_consume(queue=topic_name, on_message_callback=self.__callBack, auto_ack=True)
             logger.info(f'[RabbitMQConnector] Starting consuming on {topic_name}')
         except Exception as ex:
-            logger.error(f'Connection with broker failed!')
+            logger.error(f'Connection with broker failed! {ex}')
             return None
 
         return receiveChannel
 
-    def __get_send_channel(self, send_topic_name, connection):
-        sendChannel = connection.channel()
+    def __get_send_channel(self, send_topic_name):
+        sendChannel = self.__connection.channel()
         sendChannel.queue_declare(queue=send_topic_name)
         return sendChannel
 
@@ -66,12 +66,6 @@ class RabbitMQConnector(Observable, Observator):
         logger.info(f'Notify all {self.__observators.__len__()} listeners')
         for observator in self.__observators:
             observator.on_notify(message, *args, **kwargs)
-
-    def __start_listening(self):
-        if self.__receive_channel is not None:
-            Thread(target=lambda: self.__receive_channel.start_consuming()).start()
-        else:
-            logger.error(f'Broker is not connected!')
 
     def subscribe(self, observator: Observator):
         self.__observators.append(observator)
@@ -90,3 +84,9 @@ class RabbitMQConnector(Observable, Observator):
             logger.info(f'Ricevuto {args[1]}')
             self.__send_channel.basic_publish(exchange="", routing_key=self.__send_topic_name,
                                               body=args[1].__str__().encode())
+
+    def run(self) -> None:
+        logger.info(f'Starting...')
+        if self.__receive_channel is not None:
+            self.__receive_channel.start_consuming()
+        logger.info(f'Started!')

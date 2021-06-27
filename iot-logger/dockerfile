@@ -4,4 +4,4 @@ FROM python:3.9
 COPY requirements.txt ./
 RUN python -m pip install -r requirements.txt
 
-CMD cd sensors && python sensors.py
+CMD cd logger && python app.py

@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  iot-logger:
+    ports:
+      - "5000:5000"
+      - "4444:4444"
+    container_name: iot-logger
+    volumes:
+      - ./iot-logger:/logger
+    build:
+      context: ./iot-logger
+      dockerfile: ./dockerfile
+
+  iot-sensors:
+    container_name: iot-sensors
+    volumes:
+      - ./iot-sensors:/sensors
+    build:
+      context: ./iot-sensors
+      dockerfile: ./dockerfile
+
+  iot-frontend:
+    image: httpd:2.4
+    ports:
+      - "80:80"
+    container_name: iot-frontend
+    volumes:
+      - ./iot-front-end/build:/usr/local/apache2/htdocs

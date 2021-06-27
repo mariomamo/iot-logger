@@ -23,3 +23,40 @@ The project is composed of 5 parts
 * Nuclio
 
 You can install all this components inside docker using the ```docker-compose.yml``` file provided
+
+# IoT logger
+
+```docker
+cd iot-logger
+docker build -t iot-logger .
+```
+
+```docker
+docker run -v C:\Users\Mario\Desktop\Mario\ServerlessComputing\iot-project\iot-logger:/logger -dp 5000:5000 -dp 4444:4444 --name iot-logger -it iot-logger
+```
+
+# IoT sensors
+```docker
+cd ..
+cd iot-sensors
+docker build -t iot-sensors .
+```
+
+
+```docker
+docker run -v C:\Users\Mario\Desktop\Mario\ServerlessComputing\iot-project\iot-sensors:/sensors -d --name iot-sensors -it iot-sensors
+```
+
+# IoT frontend
+
+```docker
+cd ..
+cd iot-front-end
+docker run -v C:\Users\Mario\Desktop\Mario\ServerlessComputing\iot-project\iot-front-end\build:/usr/local/apache2/htdocs/ -dp 80:80 --name iot-frontend httpd:2.4
+```
+
+# Docker compose
+
+```bash
+docker-compose up --build -d
+```
