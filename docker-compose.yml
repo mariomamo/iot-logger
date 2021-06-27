@@ -1,5 +1,22 @@
 version: "3.7"
 services:
+  rabbitMQ:
+    image: cyrilix/rabbitmq-mqtt
+    ports:
+      - "9000:15672"
+      - "1883:1883"
+      - "5672:5672"
+    container_name: rabbitMQ
+
+  nuclio:
+    image: nuclio/dashboard:stable-amd64
+    ports:
+      - "8070:8070"
+    container_name: nuclio
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
+
   iot-logger:
     ports:
       - "5000:5000"
@@ -10,6 +27,8 @@ services:
     build:
       context: ./iot-logger
       dockerfile: ./dockerfile
+    depends_on:
+      - rabbitMQ
 
   iot-sensors:
     container_name: iot-sensors
@@ -18,6 +37,9 @@ services:
     build:
       context: ./iot-sensors
       dockerfile: ./dockerfile
+    depends_on:
+      - rabbitMQ
+      - iot-logger
 
   iot-frontend:
     image: httpd:2.4
@@ -26,3 +48,5 @@ services:
     container_name: iot-frontend
     volumes:
       - ./iot-front-end/build:/usr/local/apache2/htdocs
+    depends_on:
+      - iot-logger

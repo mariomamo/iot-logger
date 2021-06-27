@@ -52,7 +52,7 @@ def startSensor(sensor_type, chat_id, sensor_name, sensor_image, send_topic_name
 
 
 if __name__ == '__main__':
-    time.sleep(5)
+    # time.sleep(10)
     config_dict = getConfigDict()
     for sensor in config_dict['sensors']:
         startSensor(sensor['sensor_type'], sensor['chat_id'], sensor['name'], sensor['image'],

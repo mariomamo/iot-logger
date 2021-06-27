@@ -1,5 +1,6 @@
 import logging
 import socket
+import time
 from threading import Thread
 
 import waitress
@@ -63,6 +64,7 @@ def runSocketIOServer():
 
 
 if __name__ == '__main__':
+    time.sleep(10)
     socketIOServer = SocketIOServer(config_dict['name'])
     rabbitMQConnector = RabbitMQConnector(config_dict['receive_topic_name'], config_dict['send_topic_name'],
                                           config_dict['topic_url'])
