@@ -52,8 +52,8 @@ topic_url: '192.168.1.59'
 rest_port: 4444
 ```
 
-:warning: If you  want to change the port remember to change ```socket_io_port``` also :warning:
-:warning: ```rest_port``` is the port used for REST API. :warning:
+:warning: If you  want to change the port remember to change ```socket_io_port``` also :warning:<br>
+:warning: ```rest_port``` is the port used for REST API. :warning:<br>
 :warning: If you want to change this port remember to change the port inside nuclio script also :warning:
 
 Go to ```iot-project\iot-sensors``` and edit ```application.yml``` file.
