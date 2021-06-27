@@ -2,5 +2,5 @@ name: 'IoT-Logger'
 socket_io_port: 5000
 receive_topic_name: 'sensors/logs'
 send_topic_name: 'iot/sensors'
-topic_url: '192.168.1.59'
+topic_url: '192.168.1.52'
 rest_port: 4444

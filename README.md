@@ -64,7 +64,7 @@ rest_port: 4444
 :warning: ```rest_port``` is the port used for REST API. :warning:<br>
 :warning: If you want to change this port remember to change the port inside nuclio script also :warning:
 
-Go to ```iot-project\iot-logger``` and edit ```application.yml``` file.
+Go to ```iot-project\iot-sensors``` and edit ```application.yml``` file.
 
 ```yml
 sensors:  
@@ -101,7 +101,7 @@ Actually there are only three types of sensors supported
 Other sensor types will be ignored.
 Also in this case you need to change the current IP in ```topic_url``` with yours. Each sensor can have different ```topic_url```.
 
-:warning: You can of coure change all the topics, but remember to keep these topics name coherents :warning:
+:warning: You can of course change all the topics, but remember to keep these topics name coherents :warning:
 
 ## :whale: docker-compose
 
@@ -114,11 +114,13 @@ docker-compose up --build -d
 * <b>build</b>: rebuild images if they are already builded before
 * <b>d</b>: execute in background. When the docker-compose will setted up you will not see the docker logs console
 
- <img src="readme\docker-compose.png" />
+<img src="readme\docker-compose.png" />
 
 After this operation some containers (iot-logger and iot-logger) can fail. This is because rabbitMQ container is not ready. You can simply avoid this by restarting failing containers.
 
- <img src="readme\container_fail.png" />
+<img src="readme\container_fail.png" />
+
+You can skip the next section if you have run docker-compose.
 
 ## :whale2: dockerfile
 ### :one: RabbitMQ
