@@ -43,6 +43,8 @@ services:
 
   iot-frontend:
     image: httpd:2.4
+    environment:
+      TZ: "Europe/Rome"
     ports:
       - "80:80"
     container_name: iot-frontend

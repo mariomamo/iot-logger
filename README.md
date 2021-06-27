@@ -194,7 +194,7 @@ cd iot-front-end
 In questo caso non abbiamo bisogno di un dockerfile
 Run docker
 ```bash
-docker run -v <path_where_you_cloned_project>\iot-project\iot-front-end\compiled:/usr/local/apache2/htdocs/ -dp 80:80 --name iot-frontend httpd:2.4
+docker run -v <path_where_you_cloned_project>\iot-project\iot-front-end\compiled:/usr/local/apache2/htdocs/ -e TZ=Europe/Rome -dp 80:80 --name iot-frontend httpd:2.4
 ```
 
 ## :gear: Nuclio configuration

@@ -38,7 +38,7 @@ s.close()
 
 def runApiServer():
     global api
-    # yaml_config_path = os.path.join(os.environ['CATALINA_HOME'], "conf", "configurazioni", "fenice", "chatbot", "application.yml")
+    # yaml_config_path = os.path.join(os.environ['CATALINA_HOME'], "conf", "configurazionhouri", "fenice", "chatbot", "application.yml")
     # yaml_config_path = os.path.join(os.environ['APP_HOME'], "application.yml")
     blueprint = Blueprint('api', __name__)
     api = Api(blueprint,
