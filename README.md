@@ -226,3 +226,5 @@ Enjoy :)
 
 # :warning: Important
 Every time you restart nuclio you need to re-deploy nuclio function
+
+The images in this repository were taken from [flaticon.com](https://www.flaticon.com/)
