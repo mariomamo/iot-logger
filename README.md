@@ -40,15 +40,15 @@ git clone https://github.com/mariomamo/iot-project
 
 Before starting you need to modify some configurations files.<br>
 :one: Change IP address in front-end web app
-Go to ```\iot-project\iot-front-end\compiled``` and edit ```index.html``` file. You can find a div with "root" id, you need to change the IP address in url property with yours.
+Go to ```\iot-logger\iot-front-end\compiled``` and edit ```index.html``` file. You can find a div with "root" id, you need to change the IP address in url property with yours.
 
 ```html
-<div id="root" url="http://<INSERT_YOUR_IP_ADDRESS_HERE>" port="5000"></div>
+<div id="root" url="http://<INSERT_YOUR_LOCAL_IP_ADDRESS_HERE>" port="5000"></div>
 ```
 If you want you can change also the port, but it is useless, you can map this port on another port of docker.
 
 :two: Change the IP addresses in ```application.yaml``` inside python files
-Go to ```iot-project\iot-logger``` and edit ```application.yml``` file.
+Go to ```iot-logger\iot-logger``` and edit ```application.yml``` file.
 You have to write your local IP address in ```topic_url``` property.
 
 ```yml
@@ -64,7 +64,7 @@ rest_port: 4444
 :warning: ```rest_port``` is the port used for REST API. :warning:<br>
 :warning: If you want to change this port remember to change the port inside nuclio script also :warning:
 
-Go to ```iot-project\iot-sensors``` and edit ```application.yml``` file.
+Go to ```iot-logger\iot-sensors``` and edit ```application.yml``` file.
 
 ```yml
 sensors:  
@@ -163,7 +163,7 @@ docker build -t iot-logger .
 Run container
 
 ```bash
-docker run -v <path_where_you_cloned_project>\iot-project\iot-logger:/logger -dp 5000:5000 -dp 4444:4444 --name iot-logger -it iot-logger
+docker run -v <path_where_you_cloned_project>\iot-logger\iot-logger:/logger -dp 5000:5000 -dp 4444:4444 --name iot-logger -it iot-logger
 ```
 
 ### :four: IoT sensors
@@ -181,7 +181,7 @@ docker build -t iot-sensors .
 Run container
 
 ```docker
-docker run -v <path_where_you_cloned_project>\iot-project\iot-sensors:/sensors -d --name iot-sensors -it iot-sensors
+docker run -v <path_where_you_cloned_project>\iot-logger\iot-sensors:/sensors -d --name iot-sensors -it iot-sensors
 ```
 
 ### :five: IoT frontend
@@ -194,21 +194,21 @@ cd iot-front-end
 In questo caso non abbiamo bisogno di un dockerfile
 Run docker
 ```bash
-docker run -v <path_where_you_cloned_project>\iot-project\iot-front-end\compiled:/usr/local/apache2/htdocs/ -e TZ=Europe/Rome -dp 80:80 --name iot-frontend httpd:2.4
+docker run -v <path_where_you_cloned_project>\iot-logger\iot-front-end\compiled:/usr/local/apache2/htdocs/ -e TZ=Europe/Rome -dp 80:80 --name iot-frontend httpd:2.4
 ```
 
 ## :gear: Nuclio configuration
 Once you have installed the project you need to configure it.
-Go to ```iot-project/nuclio-function/loggerconsumer.yaml``` and write your local ip address at line <b>17</b>
+Go to ```iot-logger/nuclio-function/loggerconsumer.yaml``` and write your local ip address at line <b>17</b>
 
 ```yml
 triggers:
     MyMQTTTriggher:
       class: ""
       kind: rabbit-mq
-      url: "amqp://guest:guest@<INSERT_YOUR_LOCA_IP_ADDRESS_HERE>:5672"
+      url: "amqp://guest:guest@<INSERT_YOUR_LOCAL_IP_ADDRESS_HERE>:5672"
       attributes:
-        exchangeName: """"
+        exchangeName: "\"\""
         queueName: iot/web/sensors
         topics:
           - '""'
@@ -218,7 +218,7 @@ Open [Nuclio control panel](http://localhost:8070/), create a new project and im
 In the next window you should change the existing IP addres at line <b>25</b> with yours.
 
 ```python
-response = requests.get("http://<INSERT_YOUR_LOCA_IP_ADDRESS_HERE>:4444/iot/logger/sendlog", headers=headers, json=payload)
+response = requests.get("http://<INSERT_YOUR_LOCAL_IP_ADDRESS_HERE>:4444/iot/logger/sendlog", headers=headers, json=payload)
 ```
 
 Now you can deploy your function. When your function has been deployed go to [IoT logger webapp](http://localhost/) and restart ```iot-logger``` container. When ```iot-logger``` will be restarted it will send some information to the ```iot-logger``` and you will se these informations on the webapp. Now you can send commands to devices and you can read their responses.
