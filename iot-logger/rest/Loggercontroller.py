@@ -21,8 +21,8 @@ class Message(Resource):
     @api.marshal_list_with(param)
     def get(self):
         payload = request.json
-        logging.info(f'Ho ricevuto {payload}')
-        print(f'Ho ricevuto {payload}')
+        logging.info(f'I received {payload}')
+        print(f'I received {payload}')
         ris = RisultatoDTO()
         ris.setSuccess(200)
         ris.setData(payload)

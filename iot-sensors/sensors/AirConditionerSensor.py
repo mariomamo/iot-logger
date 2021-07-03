@@ -26,7 +26,7 @@ class AirConditionerSensor(Sensor):
         userId = body['userId']
         defaultMessage = (lambda: "I'm sorry, I'm not understand your command", )
 
-        message = {
+        function = {
             'set 20°': (self.__set_temperature_and_return_message, 20),
             'set 22°': (self.__set_temperature_and_return_message, 22),
             'set 24°': (self.__set_temperature_and_return_message, 24),
@@ -36,8 +36,8 @@ class AirConditionerSensor(Sensor):
             'status': (lambda: f'The temperature is {self.__status}°', )
         }.get(body['payload']['message'], defaultMessage)
 
-        params = message[1:]
-        message = message[0](*params)
+        params = function[1:]
+        message = function[0](*params)
 
         payload = PayloadDTO(self.getHour(), "text", message)
         return ResponseMessageDTO(self.sensorType, self.chatId, self.name, self.image, payload, userId=userId)
