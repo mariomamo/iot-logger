@@ -24,7 +24,7 @@ class AirConditionerSensor(Sensor):
 
     def message_handler(self, body):
         userId = body['userId']
-        defaultMessage = (lambda: "I'm sorry, I'm not understand your command", )
+        default_function = (lambda: "I'm sorry, I'm not understand your command", )
 
         function = {
             'set 20°': (self.__set_temperature_and_return_message, 20),
@@ -34,7 +34,7 @@ class AirConditionerSensor(Sensor):
             'set 28°': (self.__set_temperature_and_return_message, 28),
             'set 30°': (self.__set_temperature_and_return_message, 30),
             'status': (lambda: f'The temperature is {self.__status}°', )
-        }.get(body['payload']['message'], defaultMessage)
+        }.get(body['payload']['message'].lower(), default_function)
 
         params = function[1:]
         message = function[0](*params)

@@ -12,21 +12,28 @@ logger.setLevel(logging.INFO)
 class CarSensor(Sensor):
     def __init__(self, sensorType, chatId, name, image, send_topic_name):
         super(CarSensor, self).__init__(sensorType, chatId, name, image, send_topic_name)
+        self.__position = "40.77443841607973, 14.788751509847078"
 
     def message_handler(self, body):
-        message = "I'm sorry, i'm not understand your command"
-        payload = PayloadDTO(self.getHour(), "text", message)
+        default_message = "I'm sorry, i'm not understand your command"
         userId = body['userId']
 
-        if body['payload']['message'].lower() == 'position':
-            message = "This is my position {position}"
-        elif body['payload']['message'].lower() == 'engine off':
-            message = 'Engine turned off'
-        elif body['payload']['message'].lower() == 'engine on':
-            message = "Engine turned on"
-        elif body['payload']['message'].lower() == 'status':
-            message = "Fuel level is 57%"
+        message = {
+            "position": f"I'm here {{{self.__position}}}",
+            "engine on": "Engine turned on",
+            "engine off": "Engine turned off",
+            "status": "Fuel level is 57%"
+        }.get(body['payload']['message'].lower(), default_message)
 
-        payload.message = message
+        payload = PayloadDTO(self.getHour(), "text", message)
 
         return ResponseMessageDTO(self.sensorType, self.chatId, self.name, self.image, payload, userId=userId)
+
+
+if __name__ == '__main__':
+    carSensor = CarSensor('air-conditioner', 'TEST_CHAT_ID', 'NAME', 'IMAGE', 'SENSOR_TOPIC_NAME')
+    print(carSensor.message_handler({'userId': 'USER_ID', 'payload': {'message': 'engine on'}}))
+    print(carSensor.message_handler({'userId': 'USER_ID', 'payload': {'message': 'engine OFF'}}))
+    print(carSensor.message_handler({'userId': 'USER_ID', 'payload': {'message': 'PoSitioN'}}))
+    print(carSensor.message_handler({'userId': 'USER_ID', 'payload': {'message': 'status'}}))
+    print(carSensor.message_handler({'userId': 'USER_ID', 'payload': {'message': 'wrong'}}))

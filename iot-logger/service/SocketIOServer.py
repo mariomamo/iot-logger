@@ -2,8 +2,8 @@ import ast
 import logging
 
 import waitress
-from flask import Flask, request, session
-from flask_socketio import SocketIO, join_room, send
+from flask import Flask
+from flask_socketio import SocketIO, join_room
 
 from interfaces.Observable import Observable
 from interfaces.Observator import Observator

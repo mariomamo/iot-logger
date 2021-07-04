@@ -14,19 +14,25 @@ class HomeSensor(Sensor):
         super(HomeSensor, self).__init__(sensorType, chatId, name, image, send_topic_name)
 
     def message_handler(self, body):
-        message = "I'm sorry, i'm not understand your command"
-        payload = PayloadDTO(self.getHour(), "text", message)
+        default_message = "I'm sorry, i'm not understand your command"
         userId = body['userId']
 
-        if body['payload']['message'].lower() == 'lights on':
-            message = "I turned on the lights... don't forget to shut down them"
-        elif body['payload']['message'].lower() == 'lights off':
-            message = 'Lights are off now'
-        elif body['payload']['message'].lower() == 'activate alarm':
-            message = "Alarm actived!"
-        elif body['payload']['message'].lower() == 'deactivate alarm':
-            message = "Alarm deactivated"
+        message = {
+            "lights on": "I turned on the lights... don't forget to shut down them",
+            "lights off": "Lights are off now",
+            "activate alarm": "Alarm actived!",
+            "deactivate alarm": "Alarm deactivated",
+        }.get(body['payload']['message'].lower(), default_message)
 
-        payload.message = message
+        payload = PayloadDTO(self.getHour(), "text", message)
 
         return ResponseMessageDTO(self.sensorType, self.chatId, self.name, self.image, payload, userId=userId)
+
+
+if __name__ == '__main__':
+    homeSensor = HomeSensor('air-conditioner', 'TEST_CHAT_ID', 'NAME', 'IMAGE', 'SENSOR_TOPIC_NAME')
+    print(homeSensor.message_handler({'userId': 'USER_ID', 'payload': {'message': 'lights on'}}))
+    print(homeSensor.message_handler({'userId': 'USER_ID', 'payload': {'message': 'lights off'}}))
+    print(homeSensor.message_handler({'userId': 'USER_ID', 'payload': {'message': 'activate alarm'}}))
+    print(homeSensor.message_handler({'userId': 'USER_ID', 'payload': {'message': 'deactivate alarm'}}))
+    print(homeSensor.message_handler({'userId': 'USER_ID', 'payload': {'message': 'wrong message'}}))
